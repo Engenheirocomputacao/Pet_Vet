@@ -115,5 +115,5 @@ O sistema pode ser facilmente personalizado para atender às necessidades espec�
 
 ## Licença
 
-Este projeto é distribuído sob a licença MIT.
+Este projeto é distribuído sob a licença Alunos_Univesp.
 
