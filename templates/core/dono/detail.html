@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ dono.nome }} - PetVet{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Detalhes do Dono</h1>
+        <div class="btn-group">
+            <a href="{% url 'core:dono_update' dono.pk %}" class="btn btn-primary">
+                <i class="fas fa-edit me-1"></i> Editar
+            </a>
+            <a href="{% url 'core:dono_delete' dono.pk %}" class="btn btn-danger">
+                <i class="fas fa-trash me-1"></i> Excluir
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Informações do Dono -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Informações Pessoais</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <i class="fas fa-user me-2"></i> Nome: {{ dono.nome }}
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-id-card me-2"></i> CPF: {{ dono.cpf }}
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-envelope me-2"></i> Email: {{ dono.email }}
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-phone me-2"></i> Telefone: {{ dono.telefone }}
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-map-marker-alt me-2"></i> Endereço: {{ dono.endereco }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pets do Dono -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Pets</h5>
+                    <a href="{% url 'core:pet_create' %}?dono={{ dono.pk }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus me-1"></i> Novo Pet
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if dono.pets.all %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Espécie</th>
+                                    <th>Raça</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pet in dono.pets.all %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if pet.foto %}
+                                            <img src="{{ pet.foto.url }}" alt="{{ pet.nome }}" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+                                            {% else %}
+                                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                                <i class="fas fa-paw text-muted"></i>
+                                            </div>
+                                            {% endif %}
+                                            {{ pet.nome }}
+                                        </div>
+                                    </td>
+                                    <td>{{ pet.get_especie_display }}</td>
+                                    <td>{{ pet.raca }}</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'core:pet_detail' pet.pk %}" class="btn btn-sm btn-info" title="Detalhes">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'core:pet_update' pet.pk %}" class="btn btn-sm btn-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-paw fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Nenhum pet cadastrado.</p>
+                        <a href="{% url 'core:pet_create' %}?dono={{ dono.pk }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i> Cadastrar Primeiro Pet
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ações -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Ações</h5>
+        </div>
+        <div class="card-body">
+            <div class="d-flex gap-2">
+                <a href="{% url 'core:dono_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Voltar para Lista
+                </a>
+                <a href="{% url 'core:consulta_create' %}?dono={{ dono.pk }}" class="btn btn-success">
+                    <i class="fas fa-calendar-plus me-1"></i> Nova Consulta
+                </a>
+                <a href="{% url 'core:agenda_create' %}?dono={{ dono.pk }}" class="btn btn-info">
+                    <i class="fas fa-calendar-check me-1"></i> Novo Agendamento
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .table th {
+        background-color: #f8f9fa;
+    }
+    
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .btn-group .btn i {
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %} 

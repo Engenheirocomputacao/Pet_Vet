@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+
+{% block title %}Agenda - Calendário{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h5 card-title mb-0">Calendário de Agendamentos</h1>
+                </div>
+                <div class="card-body">
+                    <div id="calendar" role="application" aria-label="Calendário de agendamentos"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dados dos eventos em formato JSON -->
+<script id="eventos-data" type="application/json">
+{
+    "agendamentos": [
+        {% for agendamento in agendamentos %}
+        {
+            "title": "{{ agendamento.titulo }} ({{ agendamento.pet.nome }}) - {{ agendamento.veterinario }}",
+            "start": "{{ agendamento.data_hora|date:'Y-m-d\TH:i:s' }}",
+            "url": "{% url 'core:agenda_detail' agendamento.pk %}",
+            "backgroundColor": "{{ agendamento.concluido|yesno:'#28a745,#007bff' }}",
+            "borderColor": "{{ agendamento.concluido|yesno:'#28a745,#007bff' }}",
+            "textColor": "#ffffff",
+            "extendedProps": {
+                "tipo": "{{ agendamento.tipo }}",
+                "pet": "{{ agendamento.pet.nome }}",
+                "descricao": "{{ agendamento.descricao|default:''|escapejs }}"
+            }
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ],
+    "consultas": [
+        {% for consulta in consultas %}
+        {
+            "title": "Consulta: {{ consulta.pet.nome }}",
+            "start": "{{ consulta.data_hora|date:'Y-m-d\TH:i:s' }}",
+            "url": "{% url 'core:consulta_detail' consulta.pk %}",
+            "backgroundColor": "{{ consulta.status }}",
+            "borderColor": "{{ consulta.status }}",
+            "textColor": "#ffffff",
+            "extendedProps": {
+                "tipo": "Consulta",
+                "pet": "{{ consulta.pet.nome }}",
+                "status": "{{ consulta.status }}",
+                "observacoes": "{{ consulta.observacoes|default:''|escapejs }}"
+            }
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ]
+}
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendar');
+    const eventosData = JSON.parse(document.getElementById('eventos-data').textContent);
+    
+    // Preparar eventos
+    const eventos = [];
+    
+    // Processar agendamentos
+    eventosData.agendamentos.forEach(function(agendamento) {
+        eventos.push(agendamento);
+    });
+    
+    // Processar consultas
+    eventosData.consultas.forEach(function(consulta) {
+        // Definir cores baseadas no status
+        const statusColors = {
+            'REALIZADA': '#28a745',
+            'CANCELADA': '#dc3545',
+            'CONFIRMADA': '#fd7e14',
+            'AGENDADA': '#007bff'
+        };
+        
+        consulta.backgroundColor = statusColors[consulta.extendedProps.status] || '#007bff';
+        consulta.borderColor = consulta.backgroundColor;
+        eventos.push(consulta);
+    });
+    
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        locale: 'pt-br',
+        buttonText: {
+            today: 'Hoje',
+            month: 'Mês',
+            week: 'Semana',
+            day: 'Dia'
+        },
+        events: eventos,
+        eventClick: function(info) {
+            if (info.event.url) {
+                window.location.href = info.event.url;
+                return false;
+            }
+        },
+        eventDidMount: function(info) {
+            // Adiciona atributos ARIA para acessibilidade
+            info.el.setAttribute('role', 'button');
+            info.el.setAttribute('tabindex', '0');
+            info.el.setAttribute('aria-label', `${info.event.title} - ${info.event.extendedProps.tipo} - ${info.event.start.toLocaleString('pt-BR')}`);
+            
+            // Tooltip acessível
+            const tooltip = new bootstrap.Tooltip(info.el, {
+                title: `${info.event.title}<br>
+                        ${info.event.extendedProps.tipo}<br>
+                        ${info.event.start.toLocaleString('pt-BR')}<br>
+                        ${info.event.extendedProps.descricao || info.event.extendedProps.observacoes || ''}`,
+                html: true,
+                placement: 'top',
+                container: 'body',
+                trigger: 'hover focus'
+            });
+
+            // Adiciona suporte a teclado
+            info.el.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    if (info.event.url) {
+                        window.location.href = info.event.url;
+                    }
+                }
+            });
+        },
+        height: 'auto',
+        contentHeight: 600,
+        expandRows: true,
+        stickyHeaderDates: true,
+        dayMaxEvents: true,
+        displayEventTime: true,
+        displayEventEnd: true,
+        eventTimeFormat: {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        },
+        slotMinTime: '08:00:00',
+        slotMaxTime: '18:00:00',
+        allDaySlot: false,
+        slotDuration: '00:30:00',
+        slotLabelInterval: '01:00',
+        slotLabelFormat: {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        },
+        eventDisplay: 'block',
+        eventMinHeight: 25,
+        eventShortHeight: 30,
+        eventLongHeight: 40,
+        eventMaxStack: 3,
+        eventOrder: 'start,-duration',
+        eventOverlap: true,
+        eventConstraint: {
+            startTime: '08:00',
+            endTime: '18:00',
+            dows: [0, 1, 2, 3, 4, 5]
+        },
+        navLinks: true,
+        dayMaxEventRows: true,
+        moreLinkContent: function(args) {
+            return `+${args.num} mais`;
+        },
+        buttonIcons: {
+            prev: 'chevron-left',
+            next: 'chevron-right'
+        },
+        navLinkDayClick: function(date, jsEvent) {
+            calendar.changeView('timeGridDay', date);
+        },
+        navLinkWeekClick: function(weekStart, jsEvent) {
+            calendar.changeView('timeGridWeek', weekStart);
+        }
+    });
+    
+    calendar.render();
+    
+    // Responsividade
+    window.addEventListener('resize', function() {
+        calendar.updateSize();
+    });
+
+    // Adiciona suporte a teclado para navegação
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft') {
+            calendar.prev();
+        } else if (e.key === 'ArrowRight') {
+            calendar.next();
+        } else if (e.key === 't') {
+            calendar.today();
+        }
+    });
+});
+</script>
+{% endblock %}

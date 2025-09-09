@@ -1,0 +1,510 @@
+/* Arquivo principal de estilos para o aplicativo veterinário */
+
+:root {
+  /* Paleta de cores moderna */
+  --primary: #4361ee;
+  --primary-light: #738eef;
+  --primary-dark: #2f4ad0;
+  --secondary: #3f8efc;
+  --success: #2ec4b6;
+  --info: #38b6ff;
+  --warning: #ff9f1c;
+  --danger: #e71d36;
+  --light: #f8f9fa;
+  --dark: #343a40;
+  --white: #ffffff;
+  --gray-100: #f8f9fa;
+  --gray-200: #e9ecef;
+  --gray-300: #dee2e6;
+  --gray-400: #ced4da;
+  --gray-500: #adb5bd;
+  --gray-600: #6c757d;
+  --gray-700: #495057;
+  --gray-800: #343a40;
+  --gray-900: #212529;
+  
+  /* Fontes */
+  --font-family-sans-serif: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  
+  /* Sombras */
+  --box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  --box-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  --box-shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+  
+  /* Bordas */
+  --border-radius: 0.5rem;
+  --border-radius-sm: 0.25rem;
+  --border-radius-lg: 1rem;
+  --border-radius-pill: 50rem;
+  --border-radius-circle: 50%;
+  
+  /* Transições */
+  --transition-base: all 0.2s ease-in-out;
+  --transition-fade: opacity 0.15s linear;
+  --transition-collapse: height 0.35s ease;
+}
+
+/* Estilos gerais */
+body {
+  font-family: var(--font-family-sans-serif);
+  background-color: var(--gray-100);
+  color: var(--gray-800);
+  overflow-x: hidden;
+}
+
+/* Animações */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.slide-in-up {
+  animation: slideInUp 0.5s ease-out;
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Navbar */
+.navbar {
+  background-color: var(--white);
+  box-shadow: var(--box-shadow-sm);
+}
+
+.navbar-brand {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.navbar-nav .nav-link {
+  color: var(--gray-700);
+  transition: var(--transition-base);
+  position: relative;
+  padding: 0.5rem 1rem;
+}
+
+.navbar-nav .nav-link:hover {
+  color: var(--primary);
+}
+
+.navbar-nav .nav-link.active {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.navbar-nav .nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 1rem;
+  right: 1rem;
+  height: 3px;
+  background-color: var(--primary);
+  border-radius: var(--border-radius-pill);
+}
+
+/* Cards */
+.card {
+  border: none;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow-sm);
+  transition: var(--transition-base);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.card:hover {
+  box-shadow: var(--box-shadow);
+  transform: translateY(-5px);
+}
+
+.card-header {
+  background-color: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  padding: 1.25rem 1.5rem;
+}
+
+.card-header.bg-primary {
+  background-color: var(--primary) !important;
+  color: var(--white);
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.card-footer {
+  background-color: var(--white);
+  border-top: 1px solid var(--gray-200);
+  padding: 1.25rem 1.5rem;
+}
+
+/* Botões */
+.btn {
+  border-radius: var(--border-radius);
+  padding: 0.5rem 1.25rem;
+  font-weight: 500;
+  transition: var(--transition-base);
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.btn-outline-primary {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-success {
+  background-color: var(--success);
+  border-color: var(--success);
+}
+
+.btn-info {
+  background-color: var(--info);
+  border-color: var(--info);
+}
+
+.btn-warning {
+  background-color: var(--warning);
+  border-color: var(--warning);
+}
+
+.btn-danger {
+  background-color: var(--danger);
+  border-color: var(--danger);
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border-radius: var(--border-radius-circle);
+}
+
+/* Formulários */
+.form-control, .form-select {
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--gray-300);
+  transition: var(--transition-base);
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--gray-700);
+}
+
+.form-text {
+  color: var(--gray-600);
+}
+
+/* Tabelas */
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table th {
+  font-weight: 600;
+  color: var(--gray-700);
+  background-color: var(--gray-100);
+}
+
+.table td, .table th {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.table-hover tbody tr {
+  transition: var(--transition-base);
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(67, 97, 238, 0.05);
+}
+
+/* Badges */
+.badge {
+  padding: 0.5em 0.75em;
+  font-weight: 500;
+  border-radius: var(--border-radius-pill);
+}
+
+/* Alertas */
+.alert {
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 1rem 1.5rem;
+}
+
+/* Paginação */
+.pagination .page-link {
+  border: none;
+  color: var(--gray-700);
+  margin: 0 0.25rem;
+  border-radius: var(--border-radius);
+  transition: var(--transition-base);
+}
+
+.pagination .page-link:hover {
+  background-color: var(--gray-200);
+  color: var(--primary);
+}
+
+.pagination .page-item.active .page-link {
+  background-color: var(--primary);
+  color: var(--white);
+}
+
+/* Dashboard */
+.dashboard-stat-card {
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  background-color: var(--white);
+  box-shadow: var(--box-shadow-sm);
+  transition: var(--transition-base);
+}
+
+.dashboard-stat-card:hover {
+  box-shadow: var(--box-shadow);
+}
+
+.dashboard-stat-card .stat-icon {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-circle);
+  margin-bottom: 1rem;
+}
+
+.dashboard-stat-card .stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-stat-card .stat-label {
+  color: var(--gray-600);
+  font-size: 0.875rem;
+}
+
+/* Pet cards */
+.pet-card {
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--box-shadow-sm);
+  transition: var(--transition-base);
+  height: 100%;
+}
+
+.pet-card:hover {
+  box-shadow: var(--box-shadow);
+  transform: translateY(-5px);
+}
+
+.pet-card .pet-image {
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.pet-card .pet-image.no-image {
+  background-color: var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pet-card .pet-info {
+  padding: 1.25rem;
+}
+
+.pet-card .pet-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.pet-card .pet-owner {
+  color: var(--gray-600);
+  margin-bottom: 1rem;
+}
+
+.pet-card .pet-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.pet-card .pet-detail {
+  background-color: var(--gray-100);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--border-radius-pill);
+  font-size: 0.875rem;
+  color: var(--gray-700);
+}
+
+/* Calendário */
+#calendar {
+  height: 700px;
+}
+
+.fc-header-toolbar {
+  margin-bottom: 1.5rem !important;
+}
+
+.fc-button-primary {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+.fc-button-primary:hover {
+  background-color: var(--primary-dark) !important;
+  border-color: var(--primary-dark) !important;
+}
+
+.fc-event {
+  border-radius: var(--border-radius-sm) !important;
+  padding: 0.25rem 0.5rem !important;
+  font-size: 0.875rem !important;
+  cursor: pointer !important;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 1.25rem;
+  }
+  
+  .dashboard-stat-card {
+    padding: 1.25rem;
+  }
+  
+  .dashboard-stat-card .stat-value {
+    font-size: 1.5rem;
+  }
+  
+  #calendar {
+    height: 500px;
+  }
+}
+
+/* Animações para elementos específicos */
+.pet-list .pet-card {
+  animation: fadeIn 0.5s ease-in-out;
+  animation-fill-mode: both;
+}
+
+.pet-list .pet-card:nth-child(1) { animation-delay: 0.1s; }
+.pet-list .pet-card:nth-child(2) { animation-delay: 0.2s; }
+.pet-list .pet-card:nth-child(3) { animation-delay: 0.3s; }
+.pet-list .pet-card:nth-child(4) { animation-delay: 0.4s; }
+.pet-list .pet-card:nth-child(5) { animation-delay: 0.5s; }
+.pet-list .pet-card:nth-child(6) { animation-delay: 0.6s; }
+
+.dashboard-stats .dashboard-stat-card {
+  animation: slideInUp 0.5s ease-out;
+  animation-fill-mode: both;
+}
+
+.dashboard-stats .dashboard-stat-card:nth-child(1) { animation-delay: 0.1s; }
+.dashboard-stats .dashboard-stat-card:nth-child(2) { animation-delay: 0.2s; }
+.dashboard-stats .dashboard-stat-card:nth-child(3) { animation-delay: 0.3s; }
+.dashboard-stats .dashboard-stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* Loader */
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid var(--gray-200);
+  border-bottom-color: var(--primary);
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Tooltip personalizado */
+.tooltip {
+  font-family: var(--font-family-sans-serif);
+}
+
+.tooltip-inner {
+  background-color: var(--dark);
+  border-radius: var(--border-radius-sm);
+  padding: 0.5rem 0.75rem;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--gray-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gray-400);
+  border-radius: var(--border-radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-500);
+}

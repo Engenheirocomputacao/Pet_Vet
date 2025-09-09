@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if form.instance.pk %}Editar{% else %}Nova{% endif %} Consulta - PetVet
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="h4 mb-0">
+                        {% if form.instance.pk %}
+                            <i class="fas fa-edit me-2"></i>Editar Consulta
+                        {% else %}
+                            <i class="fas fa-plus me-2"></i>Nova Consulta
+                        {% endif %}
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label for="{{ form.pet.id_for_label }}" class="form-label">Pet</label>
+                            {{ form.pet }}
+                            {% if form.pet.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.pet.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.veterinario.id_for_label }}" class="form-label">Médico Veterinário</label>
+                            {{ form.veterinario }}
+                            {% if form.veterinario.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.veterinario.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.data_hora.id_for_label }}" class="form-label">Data e Hora</label>
+                            {{ form.data_hora }}
+                            {% if form.data_hora.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.data_hora.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.motivo.id_for_label }}" class="form-label">Motivo</label>
+                            {{ form.motivo }}
+                            {% if form.motivo.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.motivo.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.diagnostico.id_for_label }}" class="form-label">Diagnóstico</label>
+                            {{ form.diagnostico }}
+                            {% if form.diagnostico.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.diagnostico.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.tratamento.id_for_label }}" class="form-label">Tratamento</label>
+                            {{ form.tratamento }}
+                            {% if form.tratamento.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.tratamento.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+                            {{ form.status }}
+                            {% if form.status.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.status.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.observacoes.id_for_label }}" class="form-label">Observações</label>
+                            {{ form.observacoes }}
+                            {% if form.observacoes.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.observacoes.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'core:consulta_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Voltar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Salvar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Inicializa os campos de data e hora
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicializa o campo de data e hora
+        const dataHoraInput = document.querySelector('#{{ form.data_hora.id_for_label }}');
+        if (dataHoraInput) {
+            flatpickr(dataHoraInput, {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                locale: "pt",
+                time_24hr: true
+            });
+        }
+
+        // Inicializa o select2 para o campo de pet
+        const petSelect = document.querySelector('#{{ form.pet.id_for_label }}');
+        if (petSelect) {
+            $(petSelect).select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Selecione um pet',
+                allowClear: true
+            });
+        }
+    });
+</script>
+{% endblock %} 

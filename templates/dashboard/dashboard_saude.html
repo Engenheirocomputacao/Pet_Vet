@@ -1,0 +1,1193 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard de Saúde - PetVet{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+    
+    .dashboard-header {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+    }
+    
+    .dashboard-title {
+        color: #2c3e50;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    
+    .dashboard-subtitle {
+        color: #7f8c8d;
+        text-align: center;
+        font-size: 1.1rem;
+    }
+    
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+    
+    .metric-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .metric-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+    }
+    
+    .metric-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+    
+    .metric-label {
+        color: #7f8c8d;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+    
+    .metric-trend {
+        font-size: 0.9rem;
+        margin-top: 10px;
+    }
+    
+    .trend-up { color: #27ae60; }
+    .trend-down { color: #e74c3c; }
+    
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 25px;
+        margin-bottom: 25px;
+    }
+    
+    .chart-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+    }
+    
+    .chart-title {
+        color: #2c3e50;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        text-align: center;
+        border-bottom: 2px solid #ecf0f1;
+        padding-bottom: 10px;
+    }
+    
+    .chart-container {
+        height: 350px;
+        position: relative;
+    }
+    
+    .tables-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 25px;
+        margin-bottom: 25px;
+    }
+    
+    .table-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+    }
+    
+    .table-title {
+        color: #2c3e50;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        text-align: center;
+        border-bottom: 2px solid #ecf0f1;
+        padding-bottom: 10px;
+    }
+    
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .table th,
+    .table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ecf0f1;
+    }
+    
+    .table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+    
+    .table tr:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .refresh-btn {
+        background: linear-gradient(45deg, #e74c3c, #c0392b);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+    }
+    
+    .refresh-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+    
+    .nav-tabs {
+        border-bottom: 2px solid #ecf0f1;
+        margin-bottom: 25px;
+    }
+    
+    .nav-tabs .nav-link {
+        border: none;
+        color: #7f8c8d;
+        font-weight: 500;
+        padding: 12px 20px;
+        border-radius: 15px 15px 0 0;
+        margin-right: 5px;
+    }
+    
+    .nav-tabs .nav-link.active {
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+    }
+    
+    .tab-content {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+    }
+    
+    .alert-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        border-left: 5px solid #e74c3c;
+    }
+    
+    .alert-title {
+        color: #e74c3c;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    .alert-content {
+        color: #2c3e50;
+    }
+    
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 10px;
+        }
+        
+        .charts-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .chart-container {
+            height: 250px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Header do Dashboard -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">🏥 Dashboard de Saúde</h1>
+        <p class="dashboard-subtitle">Análise de saúde animal e procedimentos médicos da clínica PetVet</p>
+        <button class="refresh-btn" onclick="refreshDashboard()">
+            🔄 Atualizar Dados
+        </button>
+    </div>
+
+    <!-- Alertas de Saúde -->
+    <div class="alert-card">
+        <div class="alert-title">⚠️ Alertas de Saúde</div>
+        <div class="alert-content">
+            <strong>5 pets</strong> precisam de vacinação esta semana • 
+            <strong>3 consultas de retorno</strong> agendadas para hoje • 
+            <strong>2 pets</strong> com prescrições vencendo em 3 dias
+        </div>
+    </div>
+
+    <!-- Métricas de Saúde -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-icon" style="color: #e74c3c;">💉</div>
+            <div class="metric-value">89</div>
+            <div class="metric-label">Vacinações Realizadas</div>
+            <div class="metric-trend trend-up">↗️ +15% vs mês anterior</div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-icon" style="color: #3498db;">🔬</div>
+            <div class="metric-value">45</div>
+            <div class="metric-label">Exames Laboratoriais</div>
+            <div class="metric-trend trend-up">↗️ +8% vs mês anterior</div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-icon" style="color: #f39c12;">🩺</div>
+            <div class="metric-value">156</div>
+            <div class="metric-label">Consultas Realizadas</div>
+            <div class="metric-trend trend-up">↗️ +12% vs mês anterior</div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-icon" style="color: #9b59b6;">⚕️</div>
+            <div class="metric-value">23</div>
+            <div class="metric-label">Cirurgias Realizadas</div>
+            <div class="metric-trend trend-down">↘️ -5% vs mês anterior</div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-icon" style="color: #1abc9c;">💊</div>
+            <div class="metric-value">67</div>
+            <div class="metric-label">Prescrições Ativas</div>
+            <div class="metric-trend trend-up">↗️ +3% vs mês anterior</div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-icon" style="color: #34495e;">📊</div>
+            <div class="metric-value">94%</div>
+            <div class="metric-label">Taxa de Sucesso</div>
+            <div class="metric-trend trend-up">↗️ +2% vs mês anterior</div>
+        </div>
+    </div>
+
+    <!-- Abas de Análise -->
+    <div class="nav-tabs">
+        <button class="nav-link active" onclick="showTab('especies')">🐾 Espécies</button>
+        <button class="nav-link" onclick="showTab('procedimentos')">🩺 Procedimentos</button>
+        <button class="nav-link" onclick="showTab('veterinarios')">👨‍⚕️ Veterinários</button>
+        <button class="nav-link" onclick="showTab('epidemiologia')">📈 Epidemiologia</button>
+    </div>
+
+    <!-- Conteúdo das Abas -->
+    <div id="especies" class="tab-content">
+        <div class="charts-grid">
+            <!-- Distribuição por Espécie -->
+            <div class="chart-card">
+                <h3 class="chart-title">🐾 Distribuição por Espécie</h3>
+                <div class="chart-container">
+                    <canvas id="especiesChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Distribuição por Idade -->
+            <div class="chart-card">
+                <h3 class="chart-title">🎂 Distribuição por Idade</h3>
+                <div class="chart-container">
+                    <canvas id="idadeChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tables-grid">
+            <!-- Top Raças -->
+            <div class="table-card">
+                <h3 class="table-title">🏆 Top Raças</h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Raça</th>
+                                <th>Espécie</th>
+                                <th>Quantidade</th>
+                                <th>% do Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Labrador</td>
+                                <td>Cachorro</td>
+                                <td>25</td>
+                                <td>18%</td>
+                            </tr>
+                            <tr>
+                                <td>Siamês</td>
+                                <td>Gato</td>
+                                <td>18</td>
+                                <td>13%</td>
+                            </tr>
+                            <tr>
+                                <td>Poodle</td>
+                                <td>Cachorro</td>
+                                <td>15</td>
+                                <td>11%</td>
+                            </tr>
+                            <tr>
+                                <td>Persa</td>
+                                <td>Gato</td>
+                                <td>12</td>
+                                <td>9%</td>
+                            </tr>
+                            <tr>
+                                <td>Golden Retriever</td>
+                                <td>Cachorro</td>
+                                <td>10</td>
+                                <td>7%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Estatísticas por Espécie -->
+            <div class="table-card">
+                <h3 class="chart-title">📊 Estatísticas por Espécie</h3>
+                <div class="chart-container">
+                    <canvas id="estatisticasEspeciesChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="procedimentos" class="tab-content" style="display: none;">
+        <div class="charts-grid">
+            <!-- Procedimentos por Tipo -->
+            <div class="chart-card">
+                <h3 class="chart-title">🩺 Procedimentos por Tipo</h3>
+                <div class="chart-container">
+                    <canvas id="procedimentosChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Evolução de Procedimentos -->
+            <div class="chart-card">
+                <h3 class="chart-title">📈 Evolução de Procedimentos</h3>
+                <div class="chart-container">
+                    <canvas id="evolucaoChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tables-grid">
+            <!-- Top Procedimentos -->
+            <div class="table-card">
+                <h3 class="table-title">🏆 Top Procedimentos</h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Procedimento</th>
+                                <th>Quantidade</th>
+                                <th>Sucesso</th>
+                                <th>Complicações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Consulta Regular</td>
+                                <td>156</td>
+                                <td>98%</td>
+                                <td>2%</td>
+                            </tr>
+                            <tr>
+                                <td>Vacinação</td>
+                                <td>89</td>
+                                <td>100%</td>
+                                <td>0%</td>
+                            </tr>
+                            <tr>
+                                <td>Castração</td>
+                                <td>23</td>
+                                <td>96%</td>
+                                <td>4%</td>
+                            </tr>
+                            <tr>
+                                <td>Exame Laboratorial</td>
+                                <td>45</td>
+                                <td>100%</td>
+                                <td>0%</td>
+                            </tr>
+                            <tr>
+                                <td>Cirurgia</td>
+                                <td>12</td>
+                                <td>92%</td>
+                                <td>8%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Complicações por Procedimento -->
+            <div class="table-card">
+                <h3 class="chart-title">⚠️ Complicações por Procedimento</h3>
+                <div class="chart-container">
+                    <canvas id="complicacoesChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="veterinarios" class="tab-content" style="display: none;">
+        <div class="charts-grid">
+            <!-- Performance dos Veterinários -->
+            <div class="chart-card">
+                <h3 class="chart-title">👨‍⚕️ Performance dos Veterinários</h3>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Especialidades -->
+            <div class="chart-card">
+                <h3 class="chart-title">🎯 Especialidades por Veterinário</h3>
+                <div class="chart-container">
+                    <canvas id="especialidadesChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tables-grid">
+            <!-- Ranking de Veterinários -->
+            <div class="table-card">
+                <h3 class="table-title">🏆 Ranking de Veterinários</h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Veterinário</th>
+                                <th>Consultas</th>
+                                <td>Sucesso</td>
+                                <th>Satisfação</th>
+                                <th>Especialidade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Dr. Paulo Alelúia</td>
+                                <td>45</td>
+                                <td>98%</td>
+                                <td>4.8/5</td>
+                                <td>Clínica Geral</td>
+                            </tr>
+                            <tr>
+                                <td>Dr. Cleber Azevedo</td>
+                                <td>42</td>
+                                <td>96%</td>
+                                <td>4.6/5</td>
+                                <td>Cirurgia</td>
+                            </tr>
+                            <tr>
+                                <td>Dra. Ana Carolinna</td>
+                                <td>38</td>
+                                <td>97%</td>
+                                <td>4.7/5</td>
+                                <td>Dermatologia</td>
+                            </tr>
+                            <tr>
+                                <td>Dra. Camila Banborra</td>
+                                <td>31</td>
+                                <td>95%</td>
+                                <td>4.5/5</td>
+                                <td>Cardiologia</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Eficiência por Especialidade -->
+            <div class="table-card">
+                <h3 class="chart-title">📊 Eficiência por Especialidade</h3>
+                <div class="chart-container">
+                    <canvas id="eficienciaEspecialidadeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="epidemiologia" class="tab-content" style="display: none;">
+        <div class="charts-grid">
+            <!-- Doenças por Estação -->
+            <div class="chart-card">
+                <h3 class="chart-title">🌡️ Doenças por Estação</h3>
+                <div class="chart-container">
+                    <canvas id="doencasEstacaoChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Prevalência de Condições -->
+            <div class="chart-card">
+                <h3 class="chart-title">📊 Prevalência de Condições</h3>
+                <div class="chart-container">
+                    <canvas id="prevalenciaChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tables-grid">
+            <!-- Top Diagnósticos -->
+            <div class="table-card">
+                <h3 class="table-title">🏥 Top Diagnósticos</h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Diagnóstico</th>
+                                <th>Frequência</th>
+                                <th>Estação</th>
+                                <th>Tratamento</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Dermatite</td>
+                                <td>23 casos</td>
+                                <td>Verão</td>
+                                <td>Antibiótico + Pomada</td>
+                            </tr>
+                            <tr>
+                                <td>Otite</td>
+                                <td>18 casos</td>
+                                <td>Verão</td>
+                                <td>Limpeza + Gotas</td>
+                            </tr>
+                            <tr>
+                                <td>Problemas Digestivos</td>
+                                <td>15 casos</td>
+                                <td>Ano todo</td>
+                                <td>Dieta + Probiótico</td>
+                            </tr>
+                            <tr>
+                                <td>Problemas Articulares</td>
+                                <td>12 casos</td>
+                                <td>Inverno</td>
+                                <td>Anti-inflamatório</td>
+                            </tr>
+                            <tr>
+                                <td>Problemas Cardíacos</td>
+                                <td>8 casos</td>
+                                <td>Ano todo</td>
+                                <td>Medicação específica</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Análise Sazonal -->
+            <div class="table-card">
+                <h3 class="chart-title">📅 Análise Sazonal</h3>
+                <div class="chart-container">
+                    <canvas id="sazonalChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let charts = {};
+
+// Função para mostrar abas
+function showTab(tabName) {
+    // Esconder todas as abas
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(content => content.style.display = 'none');
+    
+    // Remover classe active de todos os links
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => link.classList.remove('active'));
+    
+    // Mostrar aba selecionada
+    document.getElementById(tabName).style.display = 'block';
+    
+    // Adicionar classe active ao link clicado
+    event.target.classList.add('active');
+    
+    // Criar gráficos da aba se necessário
+    if (tabName === 'especies' && !charts.especies) {
+        createEspeciesChart();
+        createIdadeChart();
+        createEstatisticasEspeciesChart();
+    } else if (tabName === 'procedimentos' && !charts.procedimentos) {
+        createProcedimentosChart();
+        createEvolucaoChart();
+        createComplicacoesChart();
+    } else if (tabName === 'veterinarios' && !charts.veterinarios) {
+        createPerformanceChart();
+        createEspecialidadesChart();
+        createEficienciaEspecialidadeChart();
+    } else if (tabName === 'epidemiologia' && !charts.epidemiologia) {
+        createDoencasEstacaoChart();
+        createPrevalenciaChart();
+        createSazonalChart();
+    }
+}
+
+// Função para atualizar o dashboard
+function refreshDashboard() {
+    location.reload();
+}
+
+// Gráfico de Espécies
+function createEspeciesChart() {
+    const ctx = document.getElementById('especiesChart').getContext('2d');
+    
+    charts.especies = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Cachorro', 'Gato', 'Ave', 'Roedor', 'Réptil', 'Outro'],
+            datasets: [{
+                data: [65, 45, 12, 8, 5, 3],
+                backgroundColor: [
+                    '#e74c3c', '#3498db', '#f39c12', '#9b59b6', '#1abc9c', '#34495e'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+// Gráfico de Idade
+function createIdadeChart() {
+    const ctx = document.getElementById('idadeChart').getContext('2d');
+    
+    charts.idade = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['0-2 anos', '2-4 anos', '4-6 anos', '6-8 anos', '8+ anos'],
+            datasets: [{
+                label: 'Quantidade',
+                data: [35, 42, 28, 20, 15],
+                backgroundColor: [
+                    'rgba(52, 152, 219, 0.8)',  // Azul para 0-2 anos
+                    'rgba(46, 204, 113, 0.8)',  // Verde para 2-4 anos
+                    'rgba(241, 196, 15, 0.8)',  // Amarelo para 4-6 anos
+                    'rgba(230, 126, 34, 0.8)',  // Laranja para 6-8 anos
+                    'rgba(155, 89, 182, 0.8)'   // Roxo para 8+ anos
+                ],
+                borderColor: [
+                    '#3498db',  // Azul
+                    '#2ecc71',  // Verde
+                    '#f1c40f',  // Amarelo
+                    '#e67e22',  // Laranja
+                    '#9b59b6'   // Roxo
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+// Gráfico de Estatísticas por Espécie
+function createEstatisticasEspeciesChart() {
+    const ctx = document.getElementById('estatisticasEspeciesChart').getContext('2d');
+    
+    charts.estatisticasEspecies = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Vacinação', 'Consultas', 'Cirurgias', 'Exames', 'Emergências'],
+            datasets: [{
+                label: 'Cachorros',
+                data: [85, 65, 15, 25, 8],
+                borderColor: '#e74c3c',
+                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                pointBackgroundColor: '#e74c3c',
+                borderWidth: 2
+            }, {
+                label: 'Gatos',
+                data: [70, 45, 8, 20, 5],
+                borderColor: '#3498db',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                pointBackgroundColor: '#3498db',
+                borderWidth: 2
+            }, {
+                label: 'Pássaros',
+                data: [60, 30, 5, 15, 3],
+                borderColor: '#f1c40f',
+                backgroundColor: 'rgba(241, 196, 15, 0.1)',
+                pointBackgroundColor: '#f1c40f',
+                borderWidth: 2
+            }, {
+                label: 'Roedores',
+                data: [40, 35, 10, 18, 4],
+                borderColor: '#2ecc71',
+                backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                pointBackgroundColor: '#2ecc71',
+                borderWidth: 2
+            }, {
+                label: 'Répteis',
+                data: [30, 20, 8, 12, 2],
+                borderColor: '#9b59b6',
+                backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                pointBackgroundColor: '#9b59b6',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+}
+
+// Gráfico de Procedimentos
+function createProcedimentosChart() {
+    const ctx = document.getElementById('procedimentosChart').getContext('2d');
+    
+    // Cores alternadas para as barras
+    const backgroundColors = [
+        'rgba(52, 152, 219, 0.8)',  // Azul
+        'rgba(46, 204, 113, 0.8)',  // Verde
+        'rgba(155, 89, 182, 0.8)',  // Roxo
+        'rgba(52, 152, 219, 0.8)',  // Azul
+        'rgba(46, 204, 113, 0.8)',  // Verde
+        'rgba(155, 89, 182, 0.8)'   // Roxo
+    ];
+    
+    const borderColors = [
+        '#3498db',  // Azul
+        '#2ecc71',  // Verde
+        '#9b59b6',  // Roxo
+        '#3498db',  // Azul
+        '#2ecc71',  // Verde
+        '#9b59b6'   // Roxo
+    ];
+    
+    charts.procedimentos = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Consulta', 'Vacinação', 'Castração', 'Exame Lab', 'Cirurgia', 'Emergência'],
+            datasets: [{
+                label: 'Quantidade',
+                data: [156, 89, 23, 45, 12, 8],
+                backgroundColor: backgroundColors,
+                borderColor: borderColors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+// Gráfico de Evolução
+function createEvolucaoChart() {
+    const ctx = document.getElementById('evolucaoChart').getContext('2d');
+    
+    charts.evolucao = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+            datasets: [{
+                label: 'Consultas',
+                data: [120, 135, 142, 138, 156, 148],
+                borderColor: '#27ae60',
+                backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Vacinações',
+                data: [65, 72, 78, 75, 89, 82],
+                borderColor: '#f39c12',
+                backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+// Gráfico de Complicações
+function createComplicacoesChart() {
+    const ctx = document.getElementById('complicacoesChart').getContext('2d');
+    
+    charts.complicacoes = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Sem Complicações', 'Leves', 'Moderadas', 'Graves'],
+            datasets: [{
+                data: [85, 10, 4, 1],
+                backgroundColor: [
+                    '#27ae60', '#f39c12', '#e67e22', '#e74c3c'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+// Gráfico de Performance
+function createPerformanceChart() {
+    const ctx = document.getElementById('performanceChart').getContext('2d');
+    
+    charts.performance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Dr. Paulo', 'Dr. Cleber', 'Dra. Ana', 'Dra. Camila'],
+            datasets: [{
+                label: 'Taxa de Sucesso (%)',
+                data: [98, 96, 97, 95],
+                backgroundColor: [
+                    'rgba(52, 152, 219, 0.8)',  // Azul para Dr. Paulo
+                    'rgba(46, 204, 113, 0.8)',  // Verde para Dr. Cleber
+                    'rgba(155, 89, 182, 0.8)',  // Roxo para Dra. Ana
+                    'rgba(230, 126, 34, 0.8)'   // Laranja para Dra. Camila
+                ],
+                borderColor: [
+                    '#3498db',  // Azul
+                    '#2ecc71',  // Verde
+                    '#9b59b6',  // Roxo
+                    '#e67e22'   // Laranja
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+}
+
+// Gráfico de Especialidades
+function createEspecialidadesChart() {
+    const ctx = document.getElementById('especialidadesChart').getContext('2d');
+    
+    charts.especialidades = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Clínica Geral', 'Cirurgia', 'Dermatologia', 'Cardiologia', 'Ortopedia'],
+            datasets: [{
+                label: 'Dr. Paulo',
+                data: [90, 70, 60, 50, 40],
+                borderColor: '#e74c3c',
+                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                pointBackgroundColor: '#e74c3c',
+                borderWidth: 2
+            }, {
+                label: 'Dr. Cleber',
+                data: [75, 85, 65, 70, 80],
+                borderColor: '#3498db',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                pointBackgroundColor: '#3498db',
+                borderWidth: 2
+            }, {
+                label: 'Dra. Ana',
+                data: [80, 65, 85, 60, 70],
+                borderColor: '#9b59b6',
+                backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                pointBackgroundColor: '#9b59b6',
+                borderWidth: 2
+            }, {
+                label: 'Dra. Camila',
+                data: [70, 75, 80, 85, 75],
+                borderColor: '#e67e22',
+                backgroundColor: 'rgba(230, 126, 34, 0.1)',
+                pointBackgroundColor: '#e67e22',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+}
+
+// Gráfico de Eficiência por Especialidade
+function createEficienciaEspecialidadeChart() {
+    const ctx = document.getElementById('eficienciaEspecialidadeChart').getContext('2d');
+    
+    charts.eficienciaEspecialidade = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Clínica Geral', 'Cirurgia', 'Dermatologia', 'Cardiologia', 'Ortopedia'],
+            datasets: [{
+                label: 'Eficiência (%)',
+                data: [92, 88, 94, 90, 86],
+                backgroundColor: [
+                    'rgba(52, 152, 219, 0.8)',  // Azul para Clínica Geral
+                    'rgba(231, 76, 60, 0.8)',   // Vermelho para Cirurgia
+                    'rgba(46, 204, 113, 0.8)',  // Verde para Dermatologia
+                    'rgba(155, 89, 182, 0.8)',  // Roxo para Cardiologia
+                    'rgba(230, 126, 34, 0.8)'   // Laranja para Ortopedia
+                ],
+                borderColor: [
+                    '#3498db',  // Azul
+                    '#e74c3c',  // Vermelho
+                    '#2ecc71',  // Verde
+                    '#9b59b6',  // Roxo
+                    '#e67e22'   // Laranja
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+}
+
+// Gráfico de Doenças por Estação
+function createDoencasEstacaoChart() {
+    const ctx = document.getElementById('doencasEstacaoChart').getContext('2d');
+    
+    charts.doencasEstacao = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Primavera', 'Verão', 'Outono', 'Inverno'],
+            datasets: [{
+                label: 'Dermatite',
+                data: [15, 23, 18, 12],
+                backgroundColor: 'rgba(231, 76, 60, 0.8)',
+                borderColor: '#e74c3c',
+                borderWidth: 1
+            }, {
+                label: 'Otite',
+                data: [8, 18, 12, 6],
+                backgroundColor: 'rgba(52, 152, 219, 0.8)',
+                borderColor: '#3498db',
+                borderWidth: 1
+            }, {
+                label: 'Problemas Articulares',
+                data: [5, 8, 10, 12],
+                backgroundColor: 'rgba(243, 156, 18, 0.8)',
+                borderColor: '#f39c12',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+// Gráfico de Prevalência
+function createPrevalenciaChart() {
+    const ctx = document.getElementById('prevalenciaChart').getContext('2d');
+    
+    charts.prevalencia = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Dermatite', 'Otite', 'Problemas Digestivos', 'Problemas Articulares', 'Problemas Cardíacos'],
+            datasets: [{
+                data: [23, 18, 15, 12, 8],
+                backgroundColor: [
+                    '#e74c3c', '#3498db', '#f39c12', '#9b59b6', '#1abc9c'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+// Gráfico Sazonal
+function createSazonalChart() {
+    const ctx = document.getElementById('sazonalChart').getContext('2d');
+    
+    charts.sazonal = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+            datasets: [{
+                label: 'Consultas',
+                data: [120, 110, 125, 130, 140, 135, 145, 150, 155, 160, 165, 170],
+                borderColor: '#9b59b6',
+                backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+// Carregar gráficos quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    showTab('especies');
+});
+</script>
+{% endblock %}

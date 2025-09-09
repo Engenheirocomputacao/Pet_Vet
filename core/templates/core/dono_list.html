@@ -1,0 +1,41 @@
+```html
+<!-- ...existing code... -->
+
+<!-- Lista de donos -->
+<div class="table-responsive">
+    <table class="table">
+        <!-- ... conteúdo da tabela ... -->
+    </table>
+</div>
+
+<!-- Controles de paginação -->
+<nav aria-label="Navegação de páginas">
+    <ul class="pagination justify-content-center">
+        {% if donos.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1">&laquo; Primeira</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ donos.previous_page_number }}">Anterior</a>
+            </li>
+        {% endif %}
+
+        <li class="page-item active">
+            <span class="page-link">
+                Página {{ donos.number }} de {{ donos.paginator.num_pages }}
+            </span>
+        </li>
+
+        {% if donos.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ donos.next_page_number }}">Próxima</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ donos.paginator.num_pages }}">Última &raquo;</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
+<!-- ...existing code... -->
+```

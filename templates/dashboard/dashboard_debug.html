@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Debug - PetVet{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>🔍 Dashboard Debug - PetVet</h1>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>📊 Dados do Contexto (Django)</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Métricas Principais:</h6>
+                    <ul>
+                        <li>Total Donos: {{ total_donos }}</li>
+                        <li>Total Pets: {{ total_pets }}</li>
+                        <li>Total Consultas: {{ total_consultas }}</li>
+                        <li>Consultas Mês: {{ consultas_mes }}</li>
+                        <li>Consultas Ano: {{ consultas_ano }}</li>
+                        <li>Consultas Agendadas: {{ consultas_agendadas }}</li>
+                        <li>Consultas Realizadas: {{ consultas_realizadas }}</li>
+                        <li>Agendamentos Pendentes: {{ agendamentos_pendentes }}</li>
+                    </ul>
+                    
+                    <h6>Espécies:</h6>
+                    <ul>
+                        {% for especie in especies_count %}
+                            <li>{{ especie.especie }}: {{ especie.total }}</li>
+                        {% endfor %}
+                    </ul>
+                    
+                    <h6>Veterinários:</h6>
+                    <ul>
+                        {% for vet in veterinarios_count %}
+                            <li>{{ vet.veterinario }}: {{ vet.total }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>🌐 Teste de APIs (JavaScript)</h5>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-primary mb-3" onclick="testAllApis()">🧪 Testar Todas as APIs</button>
+                    
+                    <div id="api-results">
+                        <p>Clique no botão para testar as APIs...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>📈 Gráficos de Teste</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Consultas dos Últimos 7 Dias</h6>
+                            <canvas id="testChart1" width="400" height="200"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Distribuição por Espécie</h6>
+                            <canvas id="testChart2" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Função para testar todas as APIs
+async function testAllApis() {
+    const resultsDiv = document.getElementById('api-results');
+    resultsDiv.innerHTML = '<div class="spinner-border" role="status"></div> Testando APIs...';
+    
+    try {
+        // Teste 1: Consultas por período
+        const consultasResponse = await fetch('/core/dashboard-api/?type=consultas_periodo');
+        const consultasData = await consultasResponse.json();
+        
+        // Teste 2: Espécies
+        const especiesResponse = await fetch('/core/dashboard-api/?type=especies_racas');
+        const especiesData = await especiesResponse.json();
+        
+        // Teste 3: Crescimento mensal
+        const crescimentoResponse = await fetch('/core/dashboard-api/?type=overview');
+        const crescimentoData = await crescimentoResponse.json();
+        
+        // Teste 4: Veterinários
+        const veterinariosResponse = await fetch('/core/dashboard-api/?type=veterinarios_performance');
+        const veterinariosData = await veterinariosResponse.json();
+        
+        // Teste 5: Clientes
+        const clientesResponse = await fetch('/core/dashboard-api/?type=clientes_fidelizacao');
+        const clientesData = await clientesResponse.json();
+        
+        // Teste 6: Saúde
+        const saudeResponse = await fetch('/core/dashboard-api/?type=saude_animal');
+        const saudeData = await saudeResponse.json();
+        
+        // Exibir resultados
+        let html = '<div class="alert alert-success">✅ Todas as APIs funcionando!</div>';
+        html += '<h6>Resultados:</h6>';
+        html += `<ul>
+            <li><strong>Consultas por período:</strong> ${consultasData.consultas_semana.length} dias</li>
+            <li><strong>Espécies:</strong> ${especiesData.especies.length} espécies</li>
+            <li><strong>Crescimento mensal:</strong> ${crescimentoData.meses.length} meses</li>
+            <li><strong>Veterinários:</strong> ${veterinariosData.veterinarios.length} veterinários</li>
+            <li><strong>Clientes:</strong> ${clientesData.donos_consultas.length} donos</li>
+            <li><strong>Saúde:</strong> ${saudeData.pets_idade.length} faixas de idade</li>
+        </ul>`;
+        
+        resultsDiv.innerHTML = html;
+        
+        // Criar gráficos de teste
+        createTestCharts(consultasData, especiesData);
+        
+    } catch (error) {
+        resultsDiv.innerHTML = `<div class="alert alert-danger">❌ Erro ao testar APIs: ${error.message}</div>`;
+        console.error('Erro:', error);
+    }
+}
+
+// Função para criar gráficos de teste
+function createTestCharts(consultasData, especiesData) {
+    // Gráfico 1: Consultas por período
+    const ctx1 = document.getElementById('testChart1').getContext('2d');
+    new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: consultasData.datas_semana,
+            datasets: [{
+                label: 'Consultas',
+                data: consultasData.consultas_semana,
+                borderColor: '#3498db',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+    
+    // Gráfico 2: Espécies
+    const ctx2 = document.getElementById('testChart2').getContext('2d');
+    new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: especiesData.especies.map(item => item.especie),
+            datasets: [{
+                data: especiesData.especies.map(item => item.total),
+                backgroundColor: ['#e74c3c', '#3498db', '#f39c12', '#9b59b6']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+
+// Testar APIs automaticamente quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Dashboard Debug carregado');
+    // testAllApis(); // Descomente para teste automático
+});
+</script>
+{% endblock %}

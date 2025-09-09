@@ -1,0 +1,14 @@
+# Dependências essenciais para o projeto PetVet
+
+# Framework web principal
+Django==5.2
+
+# Para trabalhar com imagens (upload de fotos de pets e avatars)
+Pillow==11.2.1
+
+# Parser SQL para o Django (incluído automaticamente, mas explicitamente listado)
+sqlparse==0.5.1
+
+# Dependências para produção (opcionais)
+# psycopg2-binary==2.9.7  # Para PostgreSQL
+# gunicorn==21.2.0        # Servidor WSGI para produção

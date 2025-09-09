@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Agenda - PetVet{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Agenda</h1>
+        <div>
+            <a href="{% url 'core:agenda_calendario' %}" class="btn btn-outline-primary me-2">
+                <i class="fas fa-calendar-alt me-1"></i> Ver Calendário
+            </a>
+            <a href="{% url 'core:agenda_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i> Novo Agendamento
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="tipo" class="form-label">Tipo</label>
+                    <select name="tipo" id="tipo" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="CONSULTA" {% if tipo == 'CONSULTA' %}selected{% endif %}>Consulta</option>
+                        <option value="MEDICACAO" {% if tipo == 'MEDICACAO' %}selected{% endif %}>Medicação</option>
+                        <option value="VACINA" {% if tipo == 'VACINA' %}selected{% endif %}>Vacina</option>
+                        <option value="EXAME" {% if tipo == 'EXAME' %}selected{% endif %}>Exame</option>
+                        <option value="OUTRO" {% if tipo == 'OUTRO' %}selected{% endif %}>Outro</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="concluido" class="form-label">Status</label>
+                    <select name="concluido" id="concluido" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="nao" {% if concluido == 'nao' %}selected{% endif %}>Pendentes</option>
+                        <option value="sim" {% if concluido == 'sim' %}selected{% endif %}>Concluídos</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="q" class="form-label">Buscar</label>
+                    <div class="input-group">
+                        <input type="text" name="q" id="q" class="form-control" placeholder="Buscar..." value="{{ query }}">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista de Agendamentos -->
+    <div class="card">
+        <div class="card-body">
+            {% if page_obj %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Pet</th>
+                            <th>Veterinário</th>
+                            <th>Título</th>
+                            <th>Tipo</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for agenda in page_obj %}
+                        <tr>
+                            <td>{{ agenda.data_hora|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if agenda.pet.foto %}
+                                    <img src="{{ agenda.pet.foto.url }}" alt="{{ agenda.pet.nome }}" class="rounded-circle me-2" width="32" height="32">
+                                    {% else %}
+                                    <div class="rounded-circle bg-light me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                        <i class="fas fa-paw text-muted"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <div class="fw-medium">{{ agenda.pet.nome }}</div>
+                                        <small class="text-muted">{{ agenda.pet.dono.nome }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ agenda.veterinario|default:"N/A" }}</td>
+                            <td>{{ agenda.titulo }}</td>
+                            <td>
+                                {% if agenda.tipo == 'CONSULTA' %}
+                                <span class="badge bg-primary">Consulta</span>
+                                {% elif agenda.tipo == 'CIRURGIA' %}
+                                <span class="badge bg-danger">Cirurgia</span>
+                                {% elif agenda.tipo == 'EXAME' %}
+                                <span class="badge bg-info">Exame</span>
+                                {% elif agenda.tipo == 'VACINA' %}
+                                <span class="badge bg-success">Vacina</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ agenda.get_tipo_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="badge {% if agenda.status == 'CONFIRMADO' %}bg-success{% elif agenda.status == 'CANCELADO' %}bg-danger{% else %}bg-warning{% endif %} me-2">
+                                        {% if agenda.status == 'CONFIRMADO' %}
+                                            <i class="fas fa-check-circle me-1"></i>Confirmado
+                                        {% elif agenda.status == 'CANCELADO' %}
+                                            <i class="fas fa-times-circle me-1"></i>Cancelado
+                                        {% else %}
+                                            <i class="fas fa-clock me-1"></i>Pendente
+                                        {% endif %}
+                                    </span>
+                                    <span class="badge {% if agenda.concluido %}bg-success{% else %}bg-secondary{% endif %}">
+                                        {% if agenda.concluido %}
+                                            <i class="fas fa-check-circle me-1"></i>Concluído
+                                        {% else %}
+                                            <i class="fas fa-clock me-1"></i>Pendente
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{% url 'core:agenda_detail' agenda.pk %}" class="btn btn-sm btn-outline-primary" title="Ver detalhes">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'core:agenda_update' agenda.pk %}" class="btn btn-sm btn-outline-secondary" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'core:agenda_delete' agenda.pk %}" class="btn btn-sm btn-outline-danger" title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginação -->
+            {% if page_obj.paginator.num_pages > 1 %}
+            <nav aria-label="Navegação de páginas" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if tipo %}&tipo={{ tipo }}{% endif %}{% if concluido %}&concluido={{ concluido }}{% endif %}{% if query %}&q={{ query }}{% endif %}" aria-label="Primeira">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if tipo %}&tipo={{ tipo }}{% endif %}{% if concluido %}&concluido={{ concluido }}{% endif %}{% if query %}&q={{ query }}{% endif %}" aria-label="Anterior">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if tipo %}&tipo={{ tipo }}{% endif %}{% if concluido %}&concluido={{ concluido }}{% endif %}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if tipo %}&tipo={{ tipo }}{% endif %}{% if concluido %}&concluido={{ concluido }}{% endif %}{% if query %}&q={{ query }}{% endif %}" aria-label="Próxima">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if tipo %}&tipo={{ tipo }}{% endif %}{% if concluido %}&concluido={{ concluido }}{% endif %}{% if query %}&q={{ query }}{% endif %}" aria-label="Última">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-calendar fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Nenhum agendamento encontrado</h5>
+                <p class="text-muted">Clique no botão "Novo Agendamento" para adicionar um agendamento.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .table th {
+        font-weight: 600;
+        background-color: #f8f9fa;
+    }
+    
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .btn-group .btn i {
+        font-size: 0.875rem;
+    }
+
+    .pagination {
+        margin-bottom: 0;
+    }
+
+    .page-link {
+        color: #0d6efd;
+        border-color: #dee2e6;
+    }
+
+    .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    .page-link:hover {
+        color: #0a58ca;
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+    }
+</style>
+{% endblock %} 

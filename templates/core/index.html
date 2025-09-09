@@ -1,0 +1,686 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}PetVet - Sistema Veterinário{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Estilos Base */
+    :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #3498db;
+        --accent-color: #e74c3c;
+        --success-color: #27ae60;
+        --info-color: #2980b9;
+        --text-color: #2c3e50;
+        --bg-color: #ffffff;
+        --border-color: #ecf0f1;
+        --gradient-primary: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+        --gradient-secondary: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+        --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+        --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+    }
+
+    /* Estilos Gerais */
+    body {
+        background-color: #f8f9fa;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        padding: 5rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        opacity: 0.1;
+        pointer-events: none;
+    }
+
+    .hero-image-container {
+        position: relative;
+        padding: 2rem;
+    }
+
+    .hero-image {
+        max-height: 450px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        transform: perspective(1000px) rotateY(-5deg);
+        transition: all 0.5s ease;
+        border: 8px solid rgba(255,255,255,0.1);
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+        object-fit: contain;
+        padding: 1rem;
+    }
+
+    .hero-image:hover {
+        transform: perspective(1000px) rotateY(0deg) scale(1.02);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+    }
+
+    .hero-image-decoration {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: -1;
+    }
+
+    .hero-image-decoration::before,
+    .hero-image-decoration::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.1);
+    }
+
+    .hero-image-decoration::before {
+        width: 200px;
+        height: 200px;
+        top: -50px;
+        right: -50px;
+    }
+
+    .hero-image-decoration::after {
+        width: 150px;
+        height: 150px;
+        bottom: -30px;
+        left: -30px;
+    }
+
+    .hero-section h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-section p {
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+    }
+
+    /* Cards */
+    .card {
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow-sm);
+        transition: var(--transition-base);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    .card:hover {
+        box-shadow: var(--box-shadow);
+        transform: translateY(-5px);
+    }
+
+    .card-header {
+        background-color: var(--white);
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        padding: 1.25rem 1.5rem;
+    }
+
+    .card-header.bg-primary {
+        background-color: var(--primary) !important;
+        color: var(--white);
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Estatísticas e Agendamentos */
+    .stat-card, .agenda-card {
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        background-color: var(--white);
+        box-shadow: var(--box-shadow-sm);
+        transition: var(--transition-base);
+        height: 100%;
+    }
+
+    .stat-card:hover, .agenda-card:hover {
+        box-shadow: var(--box-shadow);
+        transform: translateY(-5px);
+    }
+
+    .stat-icon, .agenda-icon {
+        width: 3rem;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin-bottom: 1rem;
+    }
+
+    .stat-value, .agenda-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label, .agenda-label {
+        color: var(--gray-600);
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+    }
+
+    .agenda-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .agenda-item {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .agenda-item:last-child {
+        border-bottom: none;
+    }
+
+    .agenda-item-icon {
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin-right: 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .agenda-item-content {
+        flex: 1;
+    }
+
+    .agenda-item-title {
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .agenda-item-time {
+        font-size: 0.75rem;
+        color: var(--gray-600);
+    }
+
+    .agenda-link {
+        display: inline-block;
+        margin-top: 1rem;
+        color: inherit;
+        text-decoration: none;
+        font-weight: 500;
+        transition: var(--transition-base);
+    }
+
+    .agenda-link:hover {
+        opacity: 0.8;
+    }
+
+    /* Recursos */
+    .feature-card {
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .feature-icon {
+        width: 4rem;
+        height: 4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin: 0 auto 1.5rem;
+        font-size: 1.75rem;
+    }
+
+    /* Animações */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideInUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .slide-in-up {
+        animation: slideInUp 0.5s ease-out;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .hero-section h1 {
+            font-size: 2rem;
+        }
+        
+        .hero-section p {
+            font-size: 1rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+        }
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .hero-buttons .btn {
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        z-index: 10;
+        position: relative;
+    }
+
+    .hero-buttons .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .hero-buttons .btn-light {
+        background: var(--white);
+        color: var(--primary);
+        border: none;
+    }
+
+    .hero-buttons .btn-light:hover {
+        background: var(--light);
+        color: var(--primary-dark);
+    }
+
+    .hero-buttons .btn-outline-light {
+        border: 2px solid var(--white);
+        color: var(--white);
+    }
+
+    .hero-buttons .btn-outline-light:hover {
+        background: var(--white);
+        color: var(--primary);
+    }
+
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+        padding: 1rem;
+        background-color: var(--light);
+    }
+
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .card-title {
+        color: var(--primary);
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .card-text {
+        color: var(--text-muted);
+        line-height: 1.6;
+    }
+
+    /* Estilos para Redes Sociais */
+    .social-links {
+        margin-top: 2rem;
+    }
+
+    .social-links .btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        transition: all 0.3s ease;
+        border-width: 2px;
+    }
+
+    .social-links .btn:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .social-links .btn-outline-primary:hover {
+        background-color: #1877f2;
+        border-color: #1877f2;
+        color: white;
+    }
+
+    .social-links .btn-outline-danger:hover {
+        background-color: #e1306c;
+        border-color: #e1306c;
+        color: white;
+    }
+
+    .social-links .btn-outline-success:hover {
+        background-color: #25d366;
+        border-color: #25d366;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .social-links .btn {
+            width: 50px;
+            height: 50px;
+            font-size: 1.25rem;
+            margin: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section" role="banner" aria-label="Seção principal">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 slide-in-up">
+                <h1>Cuidando com carinho do seu melhor amigo</h1>
+                <p>Sistema completo para gerenciamento de clínicas veterinárias, com foco na saúde e bem-estar dos pets.</p>
+                <div class="hero-buttons">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'core:pet_list' %}" class="btn btn-light btn-lg">
+                            <i class="fas fa-paw me-2"></i>Ver Pets
+                    </a>
+                    <a href="{% url 'core:consulta_create' %}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-calendar-plus me-2"></i>Nova Consulta
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-light btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Fazer Login
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="hero-image-container">
+                    <div class="hero-image-decoration"></div>
+                    <img src="{% static 'img/dog_end_cat.png' %}" 
+                         alt="Cachorro e Gato" 
+                         class="img-fluid hero-image fade-in"
+                         style="object-fit: contain;">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Estatísticas e Agendamentos -->
+<section class="container py-5" role="region" aria-label="Estatísticas e agendamentos">
+    <div class="row">
+        <div class="col-md-3 col-sm-6">
+            <div class="agenda-card bg-primary bg-opacity-10" role="article">
+                <div class="agenda-icon bg-primary text-white" aria-hidden="true">
+                    <i class="fas fa-dog fa-lg"></i>
+                </div>
+                <div class="agenda-value text-primary">{{ total_pets }}</div>
+                <div class="agenda-label">Pets Cadastrados</div>
+                {% if user.is_authenticated %}
+                    {% if pets %}
+                    <ul class="agenda-list" role="list">
+                        {% for pet in pets|slice:":3" %}
+                        <li class="agenda-item" role="listitem">
+                            <div class="agenda-item-icon bg-primary bg-opacity-10 text-primary" aria-hidden="true">
+                                <i class="fas fa-paw"></i>
+                            </div>
+                            <div class="agenda-item-content">
+                                <div class="agenda-item-title">{{ pet.nome }}</div>
+                                <div class="agenda-item-time">{{ pet.especie }} - {{ pet.raca }}</div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'core:pet_list' %}" class="agenda-link text-primary" aria-label="Ver todos os pets cadastrados">
+                        Ver todos <i class="fas fa-arrow-right ms-1" aria-hidden="true"></i>
+                    </a>
+                    {% else %}
+                    <p class="text-muted mb-0">Nenhum pet cadastrado</p>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted mb-0">Faça login para ver os pets</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="agenda-card bg-success bg-opacity-10">
+                <div class="agenda-icon bg-success text-white">
+                    <i class="fas fa-user fa-lg"></i>
+                </div>
+                <div class="agenda-value text-success">{{ total_donos }}</div>
+                <div class="agenda-label">Donos Cadastrados</div>
+                {% if user.is_authenticated %}
+                    {% if donos %}
+                    <ul class="agenda-list">
+                        {% for dono in donos|slice:":3" %}
+                        <li class="agenda-item">
+                            <div class="agenda-item-icon bg-success bg-opacity-10 text-success">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="agenda-item-content">
+                                <div class="agenda-item-title">{{ dono.nome }}</div>
+                                <div class="agenda-item-time">{{ dono.telefone }}</div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'core:dono_list' %}" class="agenda-link text-success">
+                        Ver todos <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                    {% else %}
+                    <p class="text-muted mb-0">Nenhum dono cadastrado</p>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted mb-0">Faça login para ver os donos</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="agenda-card bg-info bg-opacity-10">
+                <div class="agenda-icon bg-info text-white">
+                    <i class="fas fa-stethoscope fa-lg"></i>
+                </div>
+                <div class="agenda-value text-info">{{ total_consultas }}</div>
+                <div class="agenda-label">Consultas Agendadas</div>
+                {% if user.is_authenticated %}
+                    {% if proximas_consultas %}
+                    <ul class="agenda-list">
+                        {% for consulta in proximas_consultas|slice:":3" %}
+                        <li class="agenda-item">
+                            <div class="agenda-item-icon bg-info bg-opacity-10 text-info">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="agenda-item-content">
+                                <div class="agenda-item-title">{{ consulta.pet.nome }}</div>
+                                <div class="agenda-item-time">{{ consulta.data_hora|date:"d/m/Y H:i" }}</div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'core:consulta_list' %}" class="agenda-link text-info">
+                        Ver todas <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                    {% else %}
+                    <p class="text-muted mb-0">Nenhuma consulta agendada</p>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted mb-0">Faça login para ver as consultas</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="agenda-card bg-warning bg-opacity-10">
+                <div class="agenda-icon bg-warning text-white">
+                    <i class="fas fa-calendar-alt fa-lg"></i>
+                </div>
+                <div class="agenda-value text-warning">{{ total_agendamentos }}</div>
+                <div class="agenda-label">Próximos Agendamentos</div>
+                {% if user.is_authenticated %}
+                    {% if proximos_agendamentos %}
+                    <ul class="agenda-list">
+                        {% for agenda in proximos_agendamentos|slice:":3" %}
+                        <li class="agenda-item">
+                            <div class="agenda-item-icon bg-warning bg-opacity-10 text-warning">
+                                <i class="fas fa-clock"></i>
+            </div>
+                            <div class="agenda-item-content">
+                                <div class="agenda-item-title">{{ agenda.titulo }}</div>
+                                <div class="agenda-item-time">{{ agenda.data_hora|date:"d/m/Y H:i" }}</div>
+        </div>
+                        </li>
+                            {% endfor %}
+                    </ul>
+                    <a href="{% url 'core:agenda_list' %}" class="agenda-link text-warning">
+                        Ver calendário <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+            {% else %}
+                    <p class="text-muted mb-0">Nenhum agendamento pendente</p>
+            {% endif %}
+                                            {% else %}
+                    <p class="text-muted mb-0">Faça login para ver os agendamentos</p>
+                                        {% endif %}
+                </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recursos do Sistema -->
+<section class="container mb-5" role="region" aria-label="Recursos do sistema">
+    <h2 class="text-center mb-4">Recursos do Sistema</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <a href="{% url 'core:dono_create' %}" class="text-decoration-none">
+                <div class="card h-100 feature-card" role="article">
+                    <div class="feature-icon bg-primary bg-opacity-10 text-primary" aria-hidden="true">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h4>Cadastro Completo</h4>
+                    <p class="text-muted">Cadastre donos e pets com todas as informações necessárias, incluindo fotos dos animais.</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'core:consulta_create' %}" class="text-decoration-none">
+                <div class="card h-100 feature-card">
+                    <div class="feature-icon bg-success bg-opacity-10 text-success">
+                        <i class="fas fa-stethoscope"></i>
+                    </div>
+                    <h4>Consultas e Tratamentos</h4>
+                    <p class="text-muted">Registre consultas, diagnósticos, tratamentos e prescrições de medicamentos.</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'core:agenda_calendario' %}" class="text-decoration-none">
+                <div class="card h-100 feature-card">
+                    <div class="feature-icon bg-warning bg-opacity-10 text-warning">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h4>Agenda Completa</h4>
+                    <p class="text-muted">Agende consultas, medicações, vacinas e exames com sistema de notificações.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Dicas de Cuidados com Pets -->
+<section class="container mb-5" role="region" aria-label="Dicas de cuidados com pets">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-lightbulb me-2"></i> Dica do Dia</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-3">
+                            <i class="fas fa-paw fa-3x text-success"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <p class="lead mb-0" id="pet-tip">{{ pet_tip }}</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Redes Sociais -->
+<section class="container mb-5" role="region" aria-label="Redes sociais">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h2 class="mb-4">Siga-nos nas Redes Sociais</h2>
+            <div class="social-links">
+                <a href="https://www.facebook.com/" target="_blank" class="btn btn-outline-primary btn-lg mx-2 mb-2" aria-label="Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://www.instagram.com/petvet" target="_blank" class="btn btn-outline-secondary btn-lg mx-2 mb-2" style="border-color: #E1306C; color: #E1306C;" aria-label="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.youtube.com/" target="_blank" class="btn btn-outline-danger btn-lg mx-2 mb-2" aria-label="YouTube">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                <a href="https://twitter.com/" target="_blank" class="btn btn-outline-info btn-lg mx-2 mb-2" aria-label="Twitter">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="https://wa.me/5511999999999" target="_blank" class="btn btn-outline-success btn-lg mx-2 mb-2" aria-label="WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+                <a href="https://t.me/" target="_blank" class="btn btn-outline-primary btn-lg mx-2 mb-2" style="border-color: #0088cc; color: #0088cc;" aria-label="Telegram">
+                    <i class="fab fa-telegram-plane"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

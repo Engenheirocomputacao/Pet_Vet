@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Acessibilidade - Pet_Vet{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Acessibilidade</h1>
+    </div>
+    <div class="content-section">
+        <p>O PetVet está comprometido em garantir que nossa plataforma seja acessível a todos os profissionais veterinários e donos de pets, independentemente de suas habilidades ou deficiências. Acessibilidade é uma prioridade em nosso sistema de gestão veterinária.</p>
+
+        <h2>Recursos de Acessibilidade</h2>
+        <p>Nossa plataforma inclui os seguintes recursos para melhorar a experiência de todos os usuários:</p>
+
+        <div class="accessibility-feature">
+            <h3><i class="fas fa-adjust"></i> Modo Veterinário</h3>
+            <p>Oferecemos um modo de alto contraste especialmente desenvolvido para longas jornadas de trabalho em clínicas veterinárias, reduzindo a fadiga ocular durante consultas e procedimentos.</p>
+        </div>
+
+        <div class="accessibility-feature">
+            <h3><i class="fas fa-pause-circle"></i> Controle de Notificações</h3>
+            <p>Profissionais podem personalizar alertas visuais e sonoros para emergências veterinárias, garantindo que informações críticas sejam percebidas de acordo com as necessidades de cada usuário.</p>
+        </div>
+
+        <div class="accessibility-feature">
+            <h3><i class="fas fa-sign-language"></i> Suporte a Libras (VLibras)</h3>
+            <p>Integramos ferramentas de tradução para Língua Brasileira de Sinais, essencial para comunicação inclusiva entre equipes veterinárias e tutores de pets com deficiência auditiva.</p>
+        </div>
+
+        <div class="accessibility-feature">
+            <h3><i class="fas fa-text-height"></i> Interface Adaptável</h3>
+            <p>Tamanhos de texto e elementos da interface podem ser ajustados para facilitar o uso em ambientes clínicos com diferentes condições de iluminação e distâncias de visualização.</p>
+        </div>
+
+        <div class="accessibility-feature">
+            <h3><i class="fas fa-keyboard"></i> Atalhos Clínicos</h3>
+            <p>Desenvolvemos atalhos de teclado otimizados para fluxos de trabalho veterinários, permitindo registro rápido de consultas mesmo sem uso do mouse.</p>
+        </div>
+
+        <div class="accessibility-feature">
+            <h3><i class="fas fa-mobile-alt"></i> Design Responsivo</h3>
+            <p>Interface totalmente adaptável para uso em tablets e dispositivos móveis durante atendimentos em campo ou em áreas de internação animal.</p>
+        </div>
+
+        <h2>Padrões de Qualidade</h2>
+        <p>Nosso sistema segue as diretrizes WCAG 2.1 Nível AA e as recomendações específicas para softwares de saúde, garantindo acesso seguro e eficiente aos registros veterinários.</p>
+
+        <h2>Melhorias Contínuas</h2>
+        <p>Se você é um profissional veterinário ou tutor e encontrou alguma barreira de acesso em nosso sistema, por favor <a href="/contato">entre em contato</a>. Sua experiência nos ajuda a criar soluções mais inclusivas para o cuidado animal.</p>
+
+        <div class="alert alert-info">
+            <i class="fas fa-paw"></i> <strong>Dica:</strong> Utilize nosso tutorial de acessibilidade (disponível no menu de ajuda) para configurar a plataforma de acordo com suas necessidades específicas.
+        </div>
+    </div>
+</div>
+
+<style>
+    .accessibility-feature {
+        margin-bottom: 25px;
+        padding: 20px;
+        background-color: #f0f8ff;
+        border-radius: 8px;
+        border-left: 4px solid #17a2b8;
+        transition: transform 0.3s ease;
+    }
+    .accessibility-feature:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .accessibility-feature h3 {
+        color: #138496;
+        margin-bottom: 12px;
+        font-size: 1.25rem;
+    }
+    .accessibility-feature i {
+        margin-right: 12px;
+        color: #17a2b8;
+        font-size: 1.2rem;
+    }
+    .alert-info {
+        background-color: #e7f6f8;
+        border-color: #b8e7ee;
+        color: #0c5460;
+        padding: 15px;
+        border-radius: 8px;
+    }
+    .alert-info i {
+        color: #17a2b8;
+        margin-right: 10px;
+    }
+</style>
+{% endblock %} 

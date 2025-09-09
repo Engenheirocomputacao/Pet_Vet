@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login - PetVet{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/captcha.css' %}">
+<style>
+    .login-container {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .login-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: var(--shadow-lg);
+        width: 100%;
+        max-width: 400px;
+        padding: 2rem;
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .login-header img {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 1rem;
+    }
+
+    .login-header h1 {
+        color: var(--primary);
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .login-header p {
+        color: var(--text-muted);
+        font-size: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+        font-weight: 500;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.2rem rgba(44, 62, 80, 0.25);
+        outline: none;
+    }
+
+    .btn-login {
+        width: 100%;
+        padding: 0.75rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-login:hover {
+        background: var(--secondary);
+    }
+
+    .login-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        color: var(--text-muted);
+    }
+
+    .login-footer a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+
+    .login-footer a:hover {
+        text-decoration: underline;
+    }
+
+    .alert {
+        margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 576px) {
+        .login-card {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <img src="{% static 'img/dog_end_cat.png' %}" alt="PetVet Logo" style="width: 150px; height: auto;">
+            <h2>Login</h2>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+            
+            <div class="form-group">
+                <label for="id_username">Usuário</label>
+                <input type="text" name="username" id="id_username" class="form-control" required autofocus>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_password">Senha</label>
+                <input type="password" name="password" id="id_password" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <div class="captcha-container">
+                    <div class="captcha-header">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Verificação de Segurança</span>
+                    </div>
+                    <div class="captcha-image-container">
+                        <img id="captcha-image" src="" alt="Captcha" class="captcha-image">
+                        <div class="captcha-controls">
+                            <button type="button" class="captcha-refresh" title="Novo código">
+                                <i class="fas fa-redo-alt"></i>
+                            </button>
+                            <button type="button" class="captcha-audio" title="Áudio" style="display: none;">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="captcha-input-group">
+                        <label for="captcha_answer" class="captcha-label">Digite os caracteres acima:</label>
+                        <input type="text" name="captcha_answer" id="captcha_answer" 
+                               class="form-control captcha-input" placeholder="Digite o código" 
+                               maxlength="6" required>
+                    </div>
+                    <input type="hidden" name="captcha_id" id="captcha_id">
+                    {% if captcha_error %}
+                        <div class="captcha-error">Código incorreto. Tente novamente.</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-login">
+                <i class="fas fa-sign-in-alt me-2"></i>Entrar
+            </button>
+        </form>
+
+        <div class="login-footer">
+            <p>Esqueceu sua senha? <a href="{% url 'password_reset' %}">Recuperar senha</a></p>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/captcha.js' %}"></script>
+{% endblock %} 

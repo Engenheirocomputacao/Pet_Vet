@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Simples - PetVet{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>🧪 Dashboard Simples - Teste</h1>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>📊 Dados do Contexto Django</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Total Donos:</strong> {{ total_donos }}</p>
+                    <p><strong>Total Pets:</strong> {{ total_pets }}</p>
+                    <p><strong>Total Consultas:</strong> {{ total_consultas }}</p>
+                    <p><strong>Consultas Mês:</strong> {{ consultas_mes }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>🔍 Teste de API</h5>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-primary" onclick="testVeterinarios()">Testar Veterinários</button>
+                    <button class="btn btn-success" onclick="testClientes()">Testar Clientes</button>
+                    <div id="results" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>👨‍⚕️ Top Veterinários (Tabela)</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Veterinário</th>
+                                <th>Total Consultas</th>
+                                <th>Taxa Realização</th>
+                            </tr>
+                        </thead>
+                        <tbody id="veterinariosTable">
+                            <tr>
+                                <td colspan="3" class="text-center">
+                                    <div class="spinner-border" role="status"></div>
+                                    <br>Carregando...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>👥 Top Clientes (Tabela)</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Total Pets</th>
+                                <th>Total Consultas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientesTable">
+                            <tr>
+                                <td colspan="3" class="text-center">
+                                    <div class="spinner-border" role="status"></div>
+                                    <br>Carregando...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Função para testar API de veterinários
+async function testVeterinarios() {
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = '<div class="alert alert-info">Testando API de veterinários...</div>';
+    
+    try {
+        const response = await fetch('/core/dashboard-api/?type=veterinarios_performance');
+        const data = await response.json();
+        
+        let html = '<div class="alert alert-success">✅ API de Veterinários funcionando!</div>';
+        html += '<h6>Dados recebidos:</h6>';
+        html += '<ul>';
+        for (let vet of data.veterinarios) {
+            html += `<li>${vet.veterinario}: ${vet.total_consultas} consultas, ${vet.taxa_realizacao}% taxa</li>`;
+        }
+        html += '</ul>';
+        
+        resultsDiv.innerHTML = html;
+        
+        // Atualizar tabela
+        updateVeterinariosTable(data);
+        
+    } catch (error) {
+        resultsDiv.innerHTML = `<div class="alert alert-danger">❌ Erro: ${error.message}</div>`;
+        console.error('Erro:', error);
+    }
+}
+
+// Função para testar API de clientes
+async function testClientes() {
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = '<div class="alert alert-info">Testando API de clientes...</div>';
+    
+    try {
+        const response = await fetch('/core/dashboard-api/?type=clientes_fidelizacao');
+        const data = await response.json();
+        
+        let html = '<div class="alert alert-success">✅ API de Clientes funcionando!</div>';
+        html += '<h6>Dados recebidos:</h6>';
+        html += '<ul>';
+        for (let cliente of data.donos_consultas) {
+            html += `<li>${cliente.nome}: ${cliente.total_consultas} consultas</li>`;
+        }
+        html += '</ul>';
+        
+        resultsDiv.innerHTML = html;
+        
+        // Atualizar tabela
+        updateClientesTable(data);
+        
+    } catch (error) {
+        resultsDiv.innerHTML = `<div class="alert alert-danger">❌ Erro: ${error.message}</div>`;
+        console.error('Erro:', error);
+    }
+}
+
+// Função para atualizar tabela de veterinários
+function updateVeterinariosTable(data) {
+    const table = document.getElementById('veterinariosTable');
+    
+    if (data.veterinarios && data.veterinarios.length > 0) {
+        let html = '';
+        for (let vet of data.veterinarios) {
+            html += `
+                <tr>
+                    <td>${vet.veterinario.replace('MV ', '')}</td>
+                    <td>${vet.total_consultas}</td>
+                    <td>${vet.taxa_realizacao}%</td>
+                </tr>
+            `;
+        }
+        table.innerHTML = html;
+    } else {
+        table.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Nenhum veterinário encontrado</td></tr>';
+    }
+}
+
+// Função para atualizar tabela de clientes
+function updateClientesTable(data) {
+    const table = document.getElementById('clientesTable');
+    
+    if (data.donos_consultas && data.donos_consultas.length > 0) {
+        let html = '';
+        for (let cliente of data.donos_consultas) {
+            html += `
+                <tr>
+                    <td>${cliente.nome}</td>
+                    <td>${cliente.total_pets || 'N/A'}</td>
+                    <td>${cliente.total_consultas}</td>
+                </tr>
+            `;
+        }
+        table.innerHTML = html;
+    } else {
+        table.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Nenhum cliente encontrado</td></tr>';
+    }
+}
+
+// Carregar dados automaticamente quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Dashboard Simples carregado');
+    
+    // Testar ambas as APIs automaticamente
+    setTimeout(() => {
+        testVeterinarios();
+        setTimeout(() => {
+            testClientes();
+        }, 1000);
+    }, 500);
+});
+</script>
+{% endblock %}

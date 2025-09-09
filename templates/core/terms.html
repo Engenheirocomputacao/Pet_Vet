@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Termos de Uso - PetVet{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Termos de Uso</h1>
+        <p class="lead">Última atualização: 10 de Agosto de 2025</p>
+    </div>
+    <div class="content-section">
+        <div class="alert alert-info">
+            <i class="fas fa-paw"></i> Ao utilizar o PetVet, você concorda com estes Termos de Uso. Recomendamos a leitura atenta.
+        </div>
+
+        <div class="terms-section">
+            <h2><i class="fas fa-check-circle"></i> 1. Aceitação dos Termos</h2>
+            <p>O PetVet é um sistema de gestão veterinária desenvolvido para clínicas, hospitais e profissionais da área. Ao acessar nossa plataforma, você concorda integralmente com estes Termos. O não cumprimento pode resultar na suspensão do acesso.</p>
+        </div>
+
+        <div class="terms-section">
+            <h2><i class="fas fa-stethoscope"></i> 2. Finalidade do Sistema</h2>
+            <p>O PetVet é uma plataforma profissional para:</p>
+            <ul>
+                <li>Gestão de prontuários eletrônicos veterinários</li>
+                <li>Agendamento de consultas e procedimentos</li>
+                <li>Controle de medicamentos e vacinas</li>
+                <li>Comunicação com tutores de animais</li>
+            </ul>
+            <p>Não substitui o julgamento clínico de profissionais qualificados.</p>
+        </div>
+
+        <div class="terms-section">
+            <h2><i class="fas fa-shield-alt"></i> 3. Responsabilidades do Usuário</h2>
+            <p>Como profissional veterinário ou clínica, você concorda em:</p>
+            <ul>
+                <li>Manter informações precisas e atualizadas sobre pacientes</li>
+                <li>Proteger credenciais de acesso</li>
+                <li>Garantir confidencialidade dos dados conforme Lei Geral de Proteção de Dados</li>
+                <li>Notificar imediatamente qualquer violação de segurança</li>
+            </ul>
+        </div>
+
+        <div class="terms-section">
+            <h2><i class="fas fa-lock"></i> 4. Proteção de Dados</h2>
+            <p>O PetVet opera em conformidade com a LGPD (Lei 13.709/2018). Dados de pacientes animais são armazenados com:</p>
+            <ul>
+                <li>Criptografia de ponta a ponta</li>
+                <li>Backups diários</li>
+                <li>Controles de acesso rigorosos</li>
+            </ul>
+        </div>
+
+        <div class="terms-section">
+            <h2><i class="fas fa-file-contract"></i> 5. Propriedade Intelectual</h2>
+            <p>Todos os direitos sobre a plataforma PetVet, incluindo software, design e documentação, são propriedade exclusiva dos desenvolvedores. É expressamente proibido:</p>
+            <ul>
+                <li>Reproduzir, modificar ou distribuir o sistema</li>
+                <li>Realizar engenharia reversa</li>
+                <li>Utilizar para fins não autorizados</li>
+            </ul>
+        </div>
+
+        <div class="terms-section">
+            <h2><i class="fas fa-exclamation-triangle"></i> 6. Limitações</h2>
+            <p>O PetVet não se responsabiliza por:</p>
+            <ul>
+                <li>Decisões clínicas tomadas com base no sistema</li>
+                <li>Problemas decorrentes de uso inadequado</li>
+                <li>Interrupções temporárias por manutenção</li>
+            </ul>
+        </div>
+
+        <div class="terms-section">
+            <h2><i class="fas fa-sync-alt"></i> 7. Atualizações</h2>
+            <p>Os Termos podem ser atualizados periodicamente. Alterações significativas serão comunicadas com 30 dias de antecedência via e-mail cadastrado.</p>
+        </div>
+
+        <div class="terms-section">
+            <h2><i class="fas fa-balance-scale"></i> 8. Jurisdição</h2>
+            <p>Estes Termos são regidos pelas leis brasileiras. Eventuais disputas serão resolvidas no Foro da Comarca de São Paulo/SP.</p>
+        </div>
+
+        <div class="terms-section">
+            <h2><i class="fas fa-question-circle"></i> 9. Dúvidas</h2>
+            <p>Para questões sobre estes Termos, contate nosso <a href="/contato" class="text-primary">Departamento Jurídico</a> ou envie e-mail para juridico@petvet.com.br.</p>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-body bg-light">
+                <h5 class="card-title"><i class="fas fa-check-square"></i> Confirmação de Aceite</h5>
+                <p class="card-text">Ao utilizar o PetVet, você declara ter lido, compreendido e aceito integralmente estes Termos de Uso.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .terms-section {
+        margin-bottom: 30px;
+        padding: 20px;
+        background-color: #f8fafc;
+        border-radius: 8px;
+        border-left: 4px solid #17a2b8;
+    }
+    .terms-section h2 {
+        color: #138496;
+        margin-bottom: 20px;
+        font-size: 1.4rem;
+    }
+    .terms-section h2 i {
+        margin-right: 12px;
+        color: #17a2b8;
+    }
+    .terms-section ul {
+        padding-left: 20px;
+    }
+    .terms-section li {
+        margin-bottom: 8px;
+    }
+    .alert-info {
+        background-color: #e7f6f8;
+        border-color: #b8e7ee;
+    }
+    .card {
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+</style>
+{% endblock %} 

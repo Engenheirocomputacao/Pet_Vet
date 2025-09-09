@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ medicacao.nome }} - PetVet{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Detalhes da Medicação</h1>
+        <div class="btn-group">
+            <a href="{% url 'core:medicacao_update' medicacao.pk %}" class="btn btn-primary">
+                <i class="fas fa-edit me-1"></i> Editar
+            </a>
+            <a href="{% url 'core:medicacao_delete' medicacao.pk %}" class="btn btn-danger">
+                <i class="fas fa-trash me-1"></i> Excluir
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Informações da Medicação -->
+        <div class="col-md-8 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Informações da Medicação</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-muted mb-2">Nome</h6>
+                            <p class="mb-0">{{ medicacao.nome }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-muted mb-2">Tipo</h6>
+                            <p class="mb-0">{{ medicacao.get_tipo_display }}</p>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <h6 class="text-muted mb-2">Descrição</h6>
+                            <p class="mb-0">{{ medicacao.descricao|linebreaks }}</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <h6 class="text-muted mb-2">Dosagem</h6>
+                            <p class="mb-0">{{ medicacao.dosagem }}</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <h6 class="text-muted mb-2">Frequência</h6>
+                            <p class="mb-0">{{ medicacao.frequencia }}</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <h6 class="text-muted mb-2">Duração</h6>
+                            <p class="mb-0">{{ medicacao.duracao }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pets que usam esta medicação -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Pets que usam esta medicação</h5>
+                </div>
+                <div class="card-body">
+                    {% if medicacao.prescricao_set.exists %}
+                    <div class="list-group list-group-flush">
+                        {% for prescricao in medicacao.prescricao_set.all %}
+                            {% if prescricao.pet %}
+                            <a href="{% url 'core:pet_detail' prescricao.pet.pk %}" class="list-group-item list-group-item-action">
+                                <div class="d-flex align-items-center">
+                                    <div class="pet-avatar me-3">
+                                        {% if prescricao.pet.foto %}
+                                        <img src="{{ prescricao.pet.foto.url }}" alt="{{ prescricao.pet.nome }}" class="rounded-circle">
+                                        {% else %}
+                                        <div class="no-photo">
+                                            <i class="fas fa-paw"></i>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">{{ prescricao.pet.nome }}</h6>
+                                        <small class="text-muted">{{ prescricao.pet.get_especie_display }}</small>
+                                    </div>
+                                </div>
+                            </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-paw fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Nenhum pet está usando esta medicação.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ações -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Ações</h5>
+        </div>
+        <div class="card-body">
+            <div class="d-flex gap-2">
+                <a href="{% url 'core:medicacao_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Voltar para Lista
+                </a>
+                <a href="{% url 'core:prescricao_create' %}?medicacao={{ medicacao.pk }}" class="btn btn-success">
+                    <i class="fas fa-plus me-1"></i> Nova Prescrição
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .pet-avatar {
+        width: 40px;
+        height: 40px;
+        overflow: hidden;
+    }
+    
+    .pet-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .no-photo {
+        width: 100%;
+        height: 100%;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+        font-size: 1rem;
+    }
+    
+    .list-group-item {
+        border: none;
+        padding: 0.75rem 0;
+    }
+    
+    .list-group-item:not(:last-child) {
+        border-bottom: 1px solid #dee2e6;
+    }
+</style>
+{% endblock %} 

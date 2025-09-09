@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Estatísticas - PetVet{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+<style>
+    .card { margin-bottom: 1.5rem; border-radius: 0.5rem; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); }
+    .chart-container { position: relative; height: 300px; width: 100%; }
+    .stat-card { border-left: 4px solid #4e73df; transition: transform 0.2s; }
+    .stat-card:hover { transform: translateY(-5px); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Estatísticas e Relatórios</h1>
+        <a href="{% url 'core:dashboard' %}" class="btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Voltar para o Dashboard
+        </a>
+    </div>
+
+    <!-- Cards de Estatísticas -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2 stat-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total de Consultas (30 dias)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-consultas">Carregando...</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Outros cards aqui -->
+    </div>
+
+    <!-- Gráficos -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Consultas por Data</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="consultasPorData"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Consultas por Veterinário</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="consultasPorVeterinario"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('{% url "core:dashboard_estatisticas" %}')
+        .then(response => response.json())
+        .then(data => {
+            // Atualizar cards
+            const totalConsultas = data.consultas_por_data.reduce((total, item) => total + item.total, 0);
+            document.getElementById('total-consultas').textContent = totalConsultas;
+            
+            // Gráfico de consultas por data
+            const ctx1 = document.getElementById('consultasPorData').getContext('2d');
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: data.consultas_por_data.map(item => new Date(item.data).toLocaleDateString('pt-BR')),
+                    datasets: [{
+                        label: 'Consultas',
+                        data: data.consultas_por_data.map(item => item.total),
+                        backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                        borderColor: 'rgba(78, 115, 223, 1)',
+                        pointBackgroundColor: 'rgba(78, 115, 223, 1)',
+                        fill: true
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            // Gráfico de consultas por veterinário
+            const ctx2 = document.getElementById('consultasPorVeterinario').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: data.consultas_por_veterinario.map(item => item.veterinario),
+                    datasets: [{
+                        data: data.consultas_por_veterinario.map(item => item.total),
+                        backgroundColor: [
+                            'rgba(78, 115, 223, 0.8)',
+                            'rgba(28, 200, 138, 0.8)',
+                            'rgba(54, 185, 204, 0.8)',
+                            'rgba(246, 194, 62, 0.8)'
+                        ]
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        })
+        .catch(error => console.error('Erro ao carregar dados:', error));
+});
+</script>
+{% endblock %}

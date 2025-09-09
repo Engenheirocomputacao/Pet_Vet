@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load core_extras %}
+
+{% block title %}Histórico de {{ pet.nome }} - PetVet{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <a href="{% url 'core:pet_detail' pet.pk %}" class="text-decoration-none text-dark">
+                <i class="fas fa-arrow-left me-2"></i>
+            </a>
+            Histórico de {{ pet.nome }}
+        </h1>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-history me-2"></i>Histórico Completo
+                </h5>
+                <span class="badge bg-primary">{{ historico|length }} registros</span>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            {% if historico %}
+                <div class="list-group list-group-flush">
+                    {% for item in historico %}
+                        {% if item|class_name == 'Consulta' %}
+                            <a href="{% url 'core:consulta_detail' item.pk %}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">
+                                        <i class="fas fa-stethoscope me-2 text-primary"></i>
+                                        {{ item.get_tipo_display }}
+                                    </h6>
+                                    <small class="text-{{ item.status|lower }}">{{ item.get_status_display }}</small>
+                                </div>
+                                <p class="mb-1">
+                                    <i class="far fa-calendar-alt me-2"></i>
+                                    {{ item.data_hora|date:"d/m/Y H:i" }}
+                                </p>
+                                {% if item.diagnostico %}
+                                    <p class="mb-0 text-muted">
+                                        {{ item.diagnostico|truncatechars:150 }}
+                                    </p>
+                                {% endif %}
+                            </a>
+                        {% else %}
+                            <a href="{% url 'core:agenda_detail' item.pk %}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">
+                                        <i class="far fa-calendar-check me-2 text-success"></i>
+                                        Agendamento - {{ item.get_tipo_display }}
+                                    </h6>
+                                    <span class="badge bg-{{ item.status|lower }}">{{ item.get_status_display }}</span>
+                                </div>
+                                <p class="mb-1">
+                                    <i class="far fa-calendar-alt me-2"></i>
+                                    {{ item.data_hora|date:"d/m/Y H:i" }}
+                                    {% if item.duracao %}
+                                        <span class="ms-2">
+                                            <i class="far fa-clock me-1"></i>
+                                            {{ item.duracao }} min
+                                        </span>
+                                    {% endif %}
+                                </p>
+                                {% if item.observacoes %}
+                                    <p class="mb-0 text-muted">
+                                        {{ item.observacoes|truncatechars:150 }}
+                                    </p>
+                                {% endif %}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-inbox fa-3x text-muted"></i>
+                    </div>
+                    <h5 class="text-muted">Nenhum registro encontrado</h5>
+                    <p class="text-muted">Não há consultas ou agendamentos para este pet.</p>
+                </div>
+            {% endif %}
+        </div>
+        <div class="card-footer bg-light">
+            <a href="{% url 'core:pet_detail' pet.pk %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Voltar para o pet
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Adiciona classe de acessibilidade para melhor contraste
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mantém o foco no conteúdo principal para acessibilidade
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+            mainContent.tabIndex = -1;
+            mainContent.focus();
+        }
+        
+        // Adiciona acessibilidade aos cards clicáveis
+        document.querySelectorAll('.list-group-item-action').forEach(item => {
+            item.setAttribute('role', 'button');
+            item.setAttribute('tabindex', '0');
+            
+            // Permite ativar o link com a tecla Enter
+            item.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    this.click();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

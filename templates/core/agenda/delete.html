@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Excluir Agendamento - PetVet{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Confirmar Exclusão
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="lead">Tem certeza que deseja excluir o agendamento?</p>
+                    <p><strong>Data:</strong> {{ agenda.data_hora|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Pet:</strong> {{ agenda.pet.nome }}</p>
+                    <p><strong>Dono:</strong> {{ agenda.pet.dono.nome }}</p>
+                    <p><strong>Veterinário:</strong> {{ agenda.veterinario }}</p>
+                    <p><strong>Título:</strong> {{ agenda.titulo }}</p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>Confirmar Exclusão
+                            </button>
+                            <a href="{% url 'core:agenda_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

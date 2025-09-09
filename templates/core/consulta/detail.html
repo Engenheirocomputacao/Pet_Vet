@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Consulta - {{ consulta.pet.nome }} - PetVet{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Detalhes da Consulta</h1>
+        <div class="btn-group">
+            <a href="{% url 'core:consulta_update' consulta.pk %}" class="btn btn-primary">
+                <i class="fas fa-edit me-1"></i> Editar
+            </a>
+            <a href="{% url 'core:consulta_delete' consulta.pk %}" class="btn btn-danger">
+                <i class="fas fa-trash me-1"></i> Excluir
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Informações da Consulta -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Informações da Consulta</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <i class="fas fa-calendar-alt me-2"></i> Data: {{ consulta.data_hora|date:"d/m/Y" }}
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-clock me-2"></i> Hora: {{ consulta.data_hora|date:"H:i" }}
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-info-circle me-2"></i> Status: 
+                            {% if consulta.status == 'AGENDADA' %}
+                            <span class="badge bg-primary">Agendada</span>
+                            {% elif consulta.status == 'CONFIRMADA' %}
+                            <span class="badge bg-warning">Confirmada</span>
+                            {% elif consulta.status == 'REALIZADA' %}
+                            <span class="badge bg-success">Realizada</span>
+                            {% elif consulta.status == 'CANCELADA' %}
+                            <span class="badge bg-danger">Cancelada</span>
+                            {% endif %}
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-user-md me-2"></i> Veterinário: {{ consulta.veterinario }}
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-clipboard-list me-2"></i> Motivo: {{ consulta.motivo }}
+                        </li>
+                        {% if consulta.diagnostico %}
+                        <li class="list-group-item">
+                            <i class="fas fa-stethoscope me-2"></i> Diagnóstico: {{ consulta.diagnostico }}
+                        </li>
+                        {% endif %}
+                        {% if consulta.tratamento %}
+                        <li class="list-group-item">
+                            <i class="fas fa-pills me-2"></i> Tratamento: {{ consulta.tratamento }}
+                        </li>
+                        {% endif %}
+                        {% if consulta.observacoes %}
+                        <li class="list-group-item">
+                            <i class="fas fa-sticky-note me-2"></i> Observações: {{ consulta.observacoes }}
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informações do Pet -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Informações do Pet</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="pet-avatar me-3">
+                            {% if consulta.pet.foto %}
+                            <img src="{{ consulta.pet.foto.url }}" alt="{{ consulta.pet.nome }}" class="rounded-circle">
+                            {% else %}
+                            <div class="no-photo">
+                                <i class="fas fa-paw"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <h5 class="mb-1">{{ consulta.pet.nome }}</h5>
+                            <p class="text-muted mb-0">{{ consulta.pet.raca }}</p>
+                        </div>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <i class="fas fa-user me-2"></i> Dono: {{ consulta.pet.dono.nome }}
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-birthday-cake me-2"></i> Nascimento: {{ consulta.pet.data_nascimento|date:"d/m/Y" }}
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-venus-mars me-2"></i> Sexo: {{ consulta.pet.get_sexo_display }}
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-paw me-2"></i> Espécie: {{ consulta.pet.get_especie_display }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ações -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Ações</h5>
+        </div>
+        <div class="card-body">
+            <div class="d-flex gap-2">
+                <a href="{% url 'core:consulta_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Voltar para Lista
+                </a>
+                {% if consulta.status == 'AGENDADA' %}
+                <form method="post" action="{% url 'core:consulta_confirmar' consulta.pk %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-check me-1"></i> Confirmar Consulta
+                    </button>
+                </form>
+                {% endif %}
+                {% if consulta.status == 'CONFIRMADA' %}
+                <form method="post" action="{% url 'core:consulta_realizar' consulta.pk %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check-double me-1"></i> Marcar como Realizada
+                    </button>
+                </form>
+                {% endif %}
+                {% if consulta.status != 'CANCELADA' and consulta.status != 'REALIZADA' %}
+                <form method="post" action="{% url 'core:consulta_cancelar' consulta.pk %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-times me-1"></i> Cancelar Consulta
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .pet-avatar {
+        width: 60px;
+        height: 60px;
+        overflow: hidden;
+    }
+    
+    .pet-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .no-photo {
+        width: 100%;
+        height: 100%;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+        font-size: 1.5rem;
+    }
+</style>
+{% endblock %} 

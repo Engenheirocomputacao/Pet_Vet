@@ -1,0 +1,225 @@
+/* Estilos para acessibilidade */
+.skip-to-content {
+    position: absolute;
+    left: -999px;
+    top: 10px;
+    background: #005fcc;
+    color: #fff;
+    padding: 8px 16px;
+    z-index: 1000;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.skip-to-content:focus {
+    left: 10px;
+    outline: 3px solid #ff0;
+}
+
+:focus {
+    outline: 2px solid #005fcc !important;
+    outline-offset: 2px;
+}
+
+/* Barra de Acessibilidade */
+.accessibility-bar {
+    background: linear-gradient(135deg, #10b981 0%, #8b5cf6 100%);
+    color: white;
+    padding: 0.5rem 0;
+    font-size: 0.875rem;
+}
+
+.accessibility-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.accessibility-controls button {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.accessibility-controls button:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.accessibility-controls button.active {
+    background: rgba(255,255,255,0.2);
+}
+
+/* Alto Contraste */
+.high-contrast {
+    --primary: #000000;
+    --secondary: #ffffff;
+    --dark: #ffffff;
+    --light: #000000;
+    --white: #000000;
+    --text-color: #ffffff;
+    --bg-color: #000000;
+    --border-color: #ffff00;
+    --link-color: #ffff00;
+    --link-hover-color: #ffffff;
+    --button-bg: #ffffff;
+    --button-text: #000000;
+    --card-bg: #000000;
+    --card-border: #ffff00;
+    --input-bg: #000000;
+    --input-border: #ffff00;
+    --input-text: #ffffff;
+}
+
+.high-contrast body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.high-contrast a {
+    color: var(--link-color);
+}
+
+.high-contrast a:hover {
+    color: var(--link-hover-color);
+}
+
+.high-contrast .btn {
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border-color: var(--border-color);
+}
+
+.high-contrast .card {
+    background-color: var(--card-bg);
+    border-color: var(--card-border);
+}
+
+.high-contrast .form-control {
+    background-color: var(--input-bg);
+    border-color: var(--input-border);
+    color: var(--input-text);
+}
+
+.high-contrast .navbar {
+    background-color: var(--primary);
+    color: var(--secondary);
+}
+
+.high-contrast .table {
+    color: var(--text-color);
+}
+
+.high-contrast .table td,
+.high-contrast .table th {
+    border-color: var(--border-color);
+}
+
+.high-contrast .modal-content {
+    background-color: var(--card-bg);
+    border-color: var(--card-border);
+}
+
+.high-contrast .modal-header,
+.high-contrast .modal-footer {
+    border-color: var(--border-color);
+}
+
+.high-contrast .alert {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.high-contrast .badge {
+    background-color: var(--button-bg);
+    color: var(--button-text);
+}
+
+.high-contrast .text-muted {
+    color: var(--text-color) !important;
+}
+
+.high-contrast .border {
+    border-color: var(--border-color) !important;
+}
+
+.high-contrast .bg-light {
+    background-color: var(--bg-color) !important;
+}
+
+.high-contrast .bg-white {
+    background-color: var(--bg-color) !important;
+}
+
+.high-contrast .text-dark {
+    color: var(--text-color) !important;
+}
+
+.high-contrast .text-white {
+    color: var(--text-color) !important;
+}
+
+.high-contrast .text-primary {
+    color: var(--link-color) !important;
+}
+
+.high-contrast .text-secondary {
+    color: var(--text-color) !important;
+}
+
+.high-contrast .text-success {
+    color: var(--link-color) !important;
+}
+
+.high-contrast .text-danger {
+    color: var(--link-color) !important;
+}
+
+.high-contrast .text-warning {
+    color: var(--link-color) !important;
+}
+
+.high-contrast .text-info {
+    color: var(--link-color) !important;
+}
+
+.high-contrast .bg-primary {
+    background-color: var(--primary) !important;
+}
+
+.high-contrast .bg-secondary {
+    background-color: var(--secondary) !important;
+}
+
+.high-contrast .bg-success {
+    background-color: var(--primary) !important;
+}
+
+.high-contrast .bg-danger {
+    background-color: var(--primary) !important;
+}
+
+.high-contrast .bg-warning {
+    background-color: var(--primary) !important;
+}
+
+.high-contrast .bg-info {
+    background-color: var(--primary) !important;
+}
+
+/* Tamanhos de Fonte */
+.font-size-small {
+    font-size: 0.875rem;
+}
+
+.font-size-medium {
+    font-size: 1rem;
+}
+
+.font-size-large {
+    font-size: 1.25rem;
+} 

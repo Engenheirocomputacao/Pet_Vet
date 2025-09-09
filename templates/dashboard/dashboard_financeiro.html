@@ -1,0 +1,897 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Financeiro - PetVet{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+    
+    .dashboard-header {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+    }
+    
+    .dashboard-title {
+        color: #2c3e50;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    
+    .dashboard-subtitle {
+        color: #7f8c8d;
+        text-align: center;
+        font-size: 1.1rem;
+    }
+    
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+    
+    .metric-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .metric-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+    }
+    
+    .metric-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+    
+    .metric-label {
+        color: #7f8c8d;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+    
+    .metric-trend {
+        font-size: 0.9rem;
+        margin-top: 10px;
+    }
+    
+    .trend-up { color: #27ae60; }
+    .trend-down { color: #e74c3c; }
+    
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 25px;
+        margin-bottom: 25px;
+    }
+    
+    .chart-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+    }
+    
+    .chart-title {
+        color: #2c3e50;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        text-align: center;
+        border-bottom: 2px solid #ecf0f1;
+        padding-bottom: 10px;
+    }
+    
+    .chart-container {
+        height: 350px;
+        position: relative;
+    }
+    
+    .tables-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 25px;
+        margin-bottom: 25px;
+    }
+    
+    .table-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+    }
+    
+    .table-title {
+        color: #2c3e50;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        text-align: center;
+        border-bottom: 2px solid #ecf0f1;
+        padding-bottom: 10px;
+    }
+    
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .table th,
+    .table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ecf0f1;
+    }
+    
+    .table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+    
+    .table tr:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .refresh-btn {
+        background: linear-gradient(45deg, #27ae60, #2ecc71);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+    }
+    
+    .refresh-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+    }
+    
+    .nav-tabs {
+        border-bottom: 2px solid #ecf0f1;
+        margin-bottom: 25px;
+    }
+    
+    .nav-tabs .nav-link {
+        border: none;
+        color: #7f8c8d;
+        font-weight: 500;
+        padding: 12px 20px;
+        border-radius: 15px 15px 0 0;
+        margin-right: 5px;
+    }
+    
+    .nav-tabs .nav-link.active {
+        background-color: #27ae60;
+        color: white;
+        border: none;
+    }
+    
+    .tab-content {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+    }
+    
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 10px;
+        }
+        
+        .charts-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .chart-container {
+            height: 250px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Header do Dashboard -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">💰 Dashboard Financeiro</h1>
+        <p class="dashboard-subtitle">Análise financeira e de procedimentos da clínica PetVet</p>
+        <button class="refresh-btn" onclick="refreshDashboard()">
+            🔄 Atualizar Dados
+        </button>
+    </div>
+
+    <!-- Métricas Financeiras -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-icon" style="color: #27ae60;">💰</div>
+            <div class="metric-value">R$ 15.420</div>
+            <div class="metric-label">Faturamento Mensal</div>
+            <div class="metric-trend trend-up">↗️ +12% vs mês anterior</div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-icon" style="color: #e74c3c;">📊</div>
+            <div class="metric-value">R$ 2.570</div>
+            <div class="metric-label">Faturamento Semanal</div>
+            <div class="metric-trend trend-up">↗️ +8% vs semana anterior</div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-icon" style="color: #f39c12;">📈</div>
+            <div class="metric-value">R$ 185.040</div>
+            <div class="metric-label">Faturamento Anual</div>
+            <div class="metric-trend trend-up">↗️ +15% vs ano anterior</div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-icon" style="color: #9b59b6;">🎯</div>
+            <div class="metric-value">R$ 385</div>
+            <div class="metric-label">Ticket Médio</div>
+            <div class="metric-trend trend-up">↗️ +5% vs mês anterior</div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-icon" style="color: #1abc9c;">🔄</div>
+            <div class="metric-value">85%</div>
+            <div class="metric-label">Taxa de Retorno</div>
+            <div class="metric-trend trend-up">↗️ +3% vs mês anterior</div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-icon" style="color: #34495e;">📅</div>
+            <div class="metric-value">42</div>
+            <div class="metric-label">Consultas Agendadas</div>
+            <div class="metric-trend trend-down">↘️ -5% vs mês anterior</div>
+        </div>
+    </div>
+
+    <!-- Abas de Análise -->
+    <div class="nav-tabs">
+        <button class="nav-link active" onclick="showTab(event, 'procedimentos')">📋 Procedimentos</button>
+        <button class="nav-link" onclick="showTab(event, 'veterinarios')">👨‍⚕️ Veterinários</button>
+        <button class="nav-link" onclick="showTab(event, 'clientes')">👥 Clientes</button>
+        <button class="nav-link" onclick="showTab(event, 'tendencias')">📈 Tendências</button>
+    </div>
+
+    <!-- Conteúdo das Abas -->
+    <div id="procedimentos" class="tab-content">
+        <div class="charts-grid">
+            <!-- Gráfico de Faturamento por Procedimento -->
+            <div class="chart-card">
+                <h3 class="chart-title">💰 Faturamento por Procedimento</h3>
+                <div class="chart-container">
+                    <canvas id="procedimentosChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Gráfico de Volume de Procedimentos -->
+            <div class="chart-card">
+                <h3 class="chart-title">📊 Volume de Procedimentos</h3>
+                <div class="chart-container">
+                    <canvas id="volumeChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tables-grid">
+            <!-- Top Procedimentos -->
+            <div class="table-card">
+                <h3 class="table-title">🏆 Top Procedimentos</h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Procedimento</th>
+                                <th>Quantidade</th>
+                                <th>Faturamento</th>
+                                <th>Ticket Médio</th>
+                            </tr>
+                        </thead>
+                        <tbody id="top-procedimentos-body">
+                            <tr><td colspan="4">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Análise de Custos -->
+            <div class="table-card">
+                <h3 class="table-title">💸 Análise de Custos</h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Categoria</th>
+                                <th>Custo Mensal</th>
+                                <th>% do Faturamento</th>
+                                <th>Tendência</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Mão de Obra</td>
+                                <td>R$ 8.500</td>
+                                <td>55%</td>
+                                <td><span class="trend-up">↗️ Estável</span></td>
+                            </tr>
+                            <tr>
+                                <td>Medicamentos</td>
+                                <td>R$ 2.800</td>
+                                <td>18%</td>
+                                <td><span class="trend-down">↘️ -5%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Equipamentos</td>
+                                <td>R$ 1.200</td>
+                                <td>8%</td>
+                                <td><span class="trend-up">↗️ +2%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Administrativo</td>
+                                <td>R$ 1.500</td>
+                                <td>10%</td>
+                                <td><span class="trend-up">↗️ +1%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Outros</td>
+                                <td>R$ 1.420</td>
+                                <td>9%</td>
+                                <td><span class="trend-down">↘️ -3%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="veterinarios" class="tab-content" style="display: none;">
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3 class="chart-title">👨‍⚕️ Faturamento por Veterinário</h3>
+                <div class="chart-container">
+                    <canvas id="veterinariosFinanceiroChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <h3 class="chart-title">📊 Eficiência dos Veterinários</h3>
+                <div class="chart-container">
+                    <canvas id="eficienciaChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="clientes" class="tab-content" style="display: none;">
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3 class="chart-title">👥 Distribuição de Clientes por Valor</h3>
+                <div class="chart-container">
+                    <canvas id="clientesChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <h3 class="chart-title">🔄 Frequência de Visitas</h3>
+                <div class="chart-container">
+                    <canvas id="frequenciaChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tendencias" class="tab-content" style="display: none;">
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3 class="chart-title">📈 Tendência de Faturamento</h3>
+                <div class="chart-container">
+                    <canvas id="tendenciasChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <h3 class="chart-title">📅 Sazonalidade</h3>
+                <div class="chart-container">
+                    <canvas id="sazonalidadeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let charts = {};
+const API_BASE = "{% url 'core:dashboard_api' %}";
+
+// Helpers
+async function fetchJson(type) {
+    const res = await fetch(`${API_BASE}?type=${type}`);
+    if (!res.ok) throw new Error('Falha ao carregar API');
+    return res.json();
+}
+
+function formatCurrencyBRL(value) {
+    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+// Tabela: Top Procedimentos
+function populateTopProcedimentosTable(rows) {
+    const tbody = document.getElementById('top-procedimentos-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    if (!rows || !rows.length) {
+        tbody.innerHTML = '<tr><td colspan="4">Sem dados</td></tr>';
+        return;
+    }
+    rows.forEach(r => {
+        const tr = document.createElement('tr');
+        const fatur = typeof r.faturamento === 'number' ? formatCurrencyBRL(r.faturamento) : '-';
+        const ticket = typeof r.ticket_medio === 'number' ? formatCurrencyBRL(r.ticket_medio) : '-';
+        tr.innerHTML = `
+            <td>${r.procedimento ?? '-'}</td>
+            <td>${r.quantidade ?? 0}</td>
+            <td>${fatur}</td>
+            <td>${ticket}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// Função para mostrar abas
+function showTab(evt, tabName) {
+    // Esconder todas as abas
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(content => content.style.display = 'none');
+    
+    // Remover classe active de todos os links
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => link.classList.remove('active'));
+    
+    // Mostrar aba selecionada
+    document.getElementById(tabName).style.display = 'block';
+    
+    // Adicionar classe active ao link clicado
+    if (evt && evt.target) {
+        evt.target.classList.add('active');
+    }
+    
+    // Criar gráficos da aba se necessário
+    if (tabName === 'procedimentos' && !charts.procedimentos) {
+        createProcedimentosChart();
+        createVolumeChart();
+    } else if (tabName === 'veterinarios' && !charts.veterinariosFinanceiro) {
+        createVeterinariosFinanceiroChart();
+        createEficienciaChart();
+    } else if (tabName === 'clientes' && !charts.clientes) {
+        createClientesChart();
+        createFrequenciaChart();
+    } else if (tabName === 'tendencias' && !charts.tendencias) {
+        createTendenciasChart();
+        createSazonalidadeChart();
+    }
+}
+
+// Função para atualizar o dashboard
+function refreshDashboard() {
+    location.reload();
+}
+
+// Gráfico de Faturamento por Procedimento
+function createProcedimentosChart() {
+    const ctx = document.getElementById('procedimentosChart').getContext('2d');
+    fetchJson('procedimentos_financeiro').then(data => {
+        charts.procedimentos = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    data: data.faturamentos,
+                    backgroundColor: ['#e74c3c', '#3498db', '#f39c12', '#9b59b6', '#1abc9c'],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+        populateTopProcedimentosTable(data.tabela);
+    }).catch(console.error);
+}
+
+// Gráfico de Volume de Procedimentos
+function createVolumeChart() {
+    const ctx = document.getElementById('volumeChart').getContext('2d');
+    fetchJson('procedimentos_financeiro').then(data => {
+        charts.volume = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Procedimentos',
+                    data: data.quantidades,
+                    backgroundColor: [
+                        'rgba(52, 152, 219, 0.8)',  // Azul para Consulta
+                        'rgba(231, 76, 60, 0.8)',   // Vermelho para Cirurgia
+                        'rgba(46, 204, 113, 0.8)',  // Verde para Vacinação
+                        'rgba(155, 89, 182, 0.8)',  // Roxo para Exame
+                        'rgba(241, 196, 15, 0.8)',  // Amarelo para Banho e Tosa
+                        'rgba(230, 126, 34, 0.8)',  // Laranja para Exame Laboratorial
+                        'rgba(26, 188, 156, 0.8)',  // Turquesa para Emergência
+                        'rgba(52, 73, 94, 0.8)'    // Azul Petróleo para Outros
+                    ],
+                    borderColor: [
+                        '#3498db',  // Azul
+                        '#e74c3c',  // Vermelho
+                        '#2ecc71',  // Verde
+                        '#9b59b6',  // Roxo
+                        '#f1c40f',  // Amarelo
+                        '#e67e22',  // Laranja
+                        '#1abc9c',  // Turquesa
+                        '#34495e'   // Azul Petróleo
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }).catch(console.error);
+}
+
+// Gráfico de Faturamento por Veterinário
+function createVeterinariosFinanceiroChart() {
+    const ctx = document.getElementById('veterinariosFinanceiroChart').getContext('2d');
+    fetchJson('veterinarios_financeiro').then(data => {
+        // Garantir que estamos pegando os 4 primeiros veterinários
+        const maxVeterinarios = 4;
+        const labels = data.labels.slice(0, maxVeterinarios);
+        const faturamentos = data.faturamentos.slice(0, maxVeterinarios);
+        
+        // Cores para as barras dos veterinários
+        const cores = [
+            'rgba(52, 152, 219, 0.8)',  // Azul
+            'rgba(46, 204, 113, 0.8)',  // Verde
+            'rgba(155, 89, 182, 0.8)',  // Roxo
+            'rgba(230, 126, 34, 0.8)'   // Laranja
+        ];
+        
+        charts.veterinariosFinanceiro = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Faturamento (R$)',
+                    data: faturamentos,
+                    backgroundColor: cores,
+                    borderColor: cores.map(cor => cor.replace('0.8', '1')),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Faturamento: ' + formatCurrencyBRL(context.raw);
+                            }
+                        }
+                    }
+                },
+                scales: { 
+                    y: { 
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return 'R$ ' + value.toLocaleString('pt-BR');
+                            }
+                        }
+                    } 
+                }
+            }
+        });
+    }).catch(console.error);
+}
+
+// Gráfico de Eficiência
+function createEficienciaChart() {
+    const ctx = document.getElementById('eficienciaChart').getContext('2d');
+    
+    // Dados de exemplo para 4 médicos veterinários
+    const dadosVeterinarios = [
+        {
+            nome: 'Dr. Paulo',
+            dados: [4.2, 4.8, 4.5, 4.3, 4.7]
+        },
+        {
+            nome: 'Dra. Ana',
+            dados: [4.0, 4.7, 4.3, 4.1, 4.6]
+        },
+        {
+            nome: 'Dr. Cleber',
+            dados: [3.8, 4.6, 4.2, 4.0, 4.5]
+        },
+        {
+            nome: 'Dra. Juliana',
+            dados: [4.1, 4.9, 4.4, 4.2, 4.8]
+        }
+    ];
+
+    // Cores que combinam com o gráfico de faturamento
+    const cores = [
+        { 
+            border: 'rgba(52, 152, 219, 1)',  // Azul
+            background: 'rgba(52, 152, 219, 0.1)'
+        },
+        { 
+            border: 'rgba(46, 204, 113, 1)',  // Verde
+            background: 'rgba(46, 204, 113, 0.1)'
+        },
+        { 
+            border: 'rgba(155, 89, 182, 1)',  // Roxo
+            background: 'rgba(155, 89, 182, 0.1)'
+        },
+        { 
+            border: 'rgba(230, 126, 34, 1)',  // Laranja
+            background: 'rgba(230, 126, 34, 0.1)'
+        }
+    ];
+    
+    // Preparar os datasets para o gráfico
+    const datasets = dadosVeterinarios.map((veterinario, index) => ({
+        label: veterinario.nome,
+        data: veterinario.dados,
+        borderColor: cores[index].border,
+        backgroundColor: cores[index].background,
+        pointBackgroundColor: cores[index].border,
+        borderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6
+    }));
+    
+    charts.eficiencia = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Consultas/Hora', 'Satisfação', 'Retorno', 'Eficiência', 'Qualidade'],
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 5,
+                    pointLabels: {
+                        font: {
+                            size: 12
+                        }
+                    },
+                    ticks: {
+                        stepSize: 1,
+                        backdropColor: 'transparent'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.raw.toFixed(1)}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Gráfico de Distribuição de Clientes
+function createClientesChart() {
+    const ctx = document.getElementById('clientesChart').getContext('2d');
+    fetchJson('clientes_valor').then(data => {
+        charts.clientes = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    data: data.values,
+                    backgroundColor: ['#e74c3c', '#f39c12', '#3498db'],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    }).catch(console.error);
+}
+
+// Gráfico de Frequência
+function createFrequenciaChart() {
+    const ctx = document.getElementById('frequenciaChart').getContext('2d');
+    
+    charts.frequencia = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['1x/ano', '2x/ano', '3x/ano', '4x/ano', '5x+/ano'],
+            datasets: [{
+                label: 'Clientes',
+                data: [45, 28, 15, 8, 4],
+                borderColor: '#9b59b6',
+                backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+// Gráfico de Tendências
+function createTendenciasChart() {
+    const ctx = document.getElementById('tendenciasChart').getContext('2d');
+    fetchJson('tendencias_financeiro').then(data => {
+        charts.tendencias = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Faturamento (R$)',
+                    data: data.valores,
+                    borderColor: '#27ae60',
+                    backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }).catch(console.error);
+}
+
+// Gráfico de Sazonalidade
+function createSazonalidadeChart() {
+    const ctx = document.getElementById('sazonalidadeChart').getContext('2d');
+    
+    charts.sazonalidade = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+            datasets: [{
+                label: 'Consultas',
+                data: [120, 110, 125, 130, 140, 135, 145, 150, 155, 160, 165, 170],
+                backgroundColor: [
+                    'rgba(52, 152, 219, 0.8)',  // Jan - Azul (Verão)
+                    'rgba(52, 152, 219, 0.8)',  // Fev - Azul (Verão)
+                    'rgba(46, 204, 113, 0.8)',  // Mar - Verde (Outono)
+                    'rgba(46, 204, 113, 0.8)',  // Abr - Verde (Outono)
+                    'rgba(46, 204, 113, 0.8)',  // Mai - Verde (Outono)
+                    'rgba(155, 89, 182, 0.8)',  // Jun - Roxo (Inverno)
+                    'rgba(155, 89, 182, 0.8)',  // Jul - Roxo (Inverno)
+                    'rgba(155, 89, 182, 0.8)',  // Ago - Roxo (Inverno)
+                    'rgba(230, 126, 34, 0.8)',  // Set - Laranja (Primavera)
+                    'rgba(230, 126, 34, 0.8)',  // Out - Laranja (Primavera)
+                    'rgba(230, 126, 34, 0.8)',  // Nov - Laranja (Primavera)
+                    'rgba(52, 152, 219, 0.8)'   // Dez - Azul (Verão)
+                ],
+                borderColor: [
+                    '#3498db',  // Azul (Verão)
+                    '#3498db',
+                    '#2ecc71',  // Verde (Outono)
+                    '#2ecc71',
+                    '#2ecc71',
+                    '#9b59b6',  // Roxo (Inverno)
+                    '#9b59b6',
+                    '#9b59b6',
+                    '#e67e22',  // Laranja (Primavera)
+                    '#e67e22',
+                    '#e67e22',
+                    '#3498db'   // Azul (Verão)
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+// Carregar gráficos quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    showTab(null, 'procedimentos');
+});
+</script>
+{% endblock %}

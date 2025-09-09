@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ pet.nome }} - PetVet{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">{{ pet.nome }}</h1>
+        <div class="btn-group">
+            <a href="{% url 'core:pet_historico' pet.pk %}" class="btn btn-info text-white">
+                <i class="fas fa-history me-1"></i> Histórico
+            </a>
+            <a href="{% url 'core:pet_update' pet.pk %}" class="btn btn-primary">
+                <i class="fas fa-edit me-1"></i> Editar
+            </a>
+            <a href="{% url 'core:pet_delete' pet.pk %}" class="btn btn-danger">
+                <i class="fas fa-trash me-1"></i> Excluir
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Informações do Pet -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="pet-photo mb-3">
+                        {% if pet.foto %}
+                        <img src="{{ pet.foto.url }}" alt="{{ pet.nome }}" class="img-fluid rounded">
+                        {% else %}
+                        <div class="no-photo">
+                            <i class="fas fa-paw fa-3x"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <h5 class="card-title">{{ pet.nome }}</h5>
+                    <p class="text-muted">{{ pet.raca }}</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <i class="fas fa-user me-2"></i> Dono: {{ pet.dono.nome }}
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-birthday-cake me-2"></i> Nascimento: {{ pet.data_nascimento|date:"d/m/Y" }}
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-venus-mars me-2"></i> Sexo: {{ pet.get_sexo_display }}
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-weight me-2"></i> Peso: {{ pet.peso }} kg
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-calendar-alt me-2"></i> Cadastrado em: {{ pet.data_cadastro|date:"d/m/Y" }}
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Consultas -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Consultas</h5>
+                    <div class="btn-group">
+                        <a href="{% url 'core:pet_historico' pet.pk %}" class="btn btn-sm btn-outline-secondary me-1">
+                            <i class="fas fa-history me-1"></i> Ver Histórico
+                        </a>
+                        <a href="{% url 'core:consulta_create' %}?pet={{ pet.pk }}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus me-1"></i> Nova Consulta
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if consultas %}
+                    <div class="list-group">
+                        {% for consulta in consultas %}
+                        <a href="{% url 'core:consulta_detail' consulta.pk %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ consulta.data_hora|date:"d/m/Y H:i" }}</h6>
+                                <small class="text-{{ consulta.status|lower }}">{{ consulta.get_status_display }}</small>
+                            </div>
+                            <p class="mb-1">{{ consulta.diagnostico|truncatechars:100 }}</p>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">Nenhuma consulta registrada.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Agendamentos -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Agendamentos</h5>
+                    <a href="{% url 'core:agenda_create' %}?pet={{ pet.pk }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus me-1"></i> Novo Agendamento
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if agendamentos %}
+                    <div class="list-group">
+                        {% for agendamento in agendamentos %}
+                        <a href="{% url 'core:agenda_detail' agendamento.pk %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ agendamento.data_hora|date:"d/m/Y H:i" }}</h6>
+                                <small class="text-{{ agendamento.status|lower }}">{{ agendamento.get_status_display }}</small>
+                            </div>
+                            <p class="mb-1">{{ agendamento.tipo }}</p>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">Nenhum agendamento registrado.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .pet-photo {
+        width: 200px;
+        height: 200px;
+        margin: 0 auto;
+        overflow: hidden;
+    }
+    
+    .pet-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .no-photo {
+        width: 100%;
+        height: 100%;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+    }
+</style>
+{% endblock %} 
